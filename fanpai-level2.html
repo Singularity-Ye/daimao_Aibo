@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <title>呆猫配对游戏 - 第二关</title>
+  <style>
+    @font-face {
+      font-family: 'KoseFont';
+      src: url('fonts/Kosefont-JP.ttf') format('truetype');
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #8B0000, #FF0000);
+      font-family: 'KoseFont', Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 福字装饰 */
+    .fu {
+      position: fixed;
+      color: #FFD700;
+      font-family: 'KoseFont', Arial, sans-serif;
+      font-size: 80px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      animation: fuFloat 3s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    .fu-left {
+      top: 50px;
+      left: 50px;
+      transform: rotate(-15deg);
+    }
+
+    .fu-right {
+      top: 50px;
+      right: 50px;
+      transform: rotate(15deg);
+    }
+
+    /* 灯笼装饰 */
+    .lantern {
+      position: fixed;
+      width: 60px;
+      height: 80px;
+      background: url('images/lantern.png') no-repeat center/contain;
+      animation: lanternSwing 3s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    .lantern-left {
+      left: 100px;
+      top: 20px;
+    }
+
+    .lantern-right {
+      right: 100px;
+      top: 20px;
+    }
+
+    /* 春联装饰 */
+    .couplet {
+      position: fixed;
+      color: #FFD700;
+      font-family: 'KoseFont', Arial, sans-serif;
+      font-size: 24px;
+      writing-mode: vertical-lr;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      z-index: 1;
+    }
+
+    .couplet-left {
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .couplet-right {
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* 动画效果 */
+    @keyframes fuFloat {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(-15deg);
+      }
+
+      50% {
+        transform: translateY(-10px) rotate(-15deg);
+      }
+    }
+
+    @keyframes lanternSwing {
+
+      0%,
+      100% {
+        transform: rotate(-5deg);
+      }
+
+      50% {
+        transform: rotate(5deg);
+      }
+    }
+
+    .level-title {
+      color: #03e9f4;
+      font-size: 36px;
+      margin: 30px 0;
+      text-align: center;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-shadow:
+        0 0 5px #03e9f4,
+        0 0 25px #03e9f4,
+        0 0 50px #03e9f4,
+        0 0 100px #03e9f4;
+      animation: neonGlow 1.5s ease-in-out infinite alternate;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes neonGlow {
+      from {
+        text-shadow:
+          0 0 5px #03e9f4,
+          0 0 25px #03e9f4,
+          0 0 50px #03e9f4,
+          0 0 100px #03e9f4;
+      }
+
+      to {
+        text-shadow:
+          0 0 2.5px #03e9f4,
+          0 0 12.5px #03e9f4,
+          0 0 25px #03e9f4,
+          0 0 50px #03e9f4;
+      }
+    }
+
+    .game-container {
+      width: 800px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 20px;
+      margin-bottom: 80px;
+      /* 确保不遮挡按钮 */
+    }
+
+    .card {
+      aspect-ratio: 1;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+      cursor: pointer;
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      backface-visibility: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-front {
+      background: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .card-front img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+    }
+
+    .card-back {
+      background: url('images/fanpaibeijing.png') no-repeat center center;
+      background-size: cover;
+    }
+
+    /* 下一关按钮样式 */
+    .next-level {
+      display: none;
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #FFD700, #FF0000, #FFD700);
+      background-size: 200% 200%;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      position: fixed;
+      bottom: 30px;
+      /* 下面的按钮 */
+      right: 30px;
+      font-size: 20px;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-decoration: none;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+      transition: all 0.3s ease;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      animation:
+        buttonGlow 1.5s ease-in-out infinite alternate,
+        gradientMove 3s ease infinite;
+      overflow: hidden;
+      z-index: 99;
+    }
+
+    /* 四角装饰 */
+    .next-level::before,
+    .next-level::after,
+    .next-level>span::before,
+    .next-level>span::after {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border-color: #FFD700;
+      border-style: solid;
+      pointer-events: none;
+      animation: borderGlow 1.5s ease-in-out infinite alternate;
+    }
+
+    /* 左上角 */
+    .next-level::before {
+      top: 0;
+      left: 0;
+      border-width: 3px 0 0 3px;
+      border-radius: 10px 0 0 0;
+    }
+
+    /* 右上角 */
+    .next-level::after {
+      top: 0;
+      right: 0;
+      border-width: 3px 3px 0 0;
+      border-radius: 0 10px 0 0;
+    }
+
+    /* 左下角 */
+    .next-level>span::before {
+      bottom: 0;
+      left: 0;
+      border-width: 0 0 3px 3px;
+      border-radius: 0 0 0 10px;
+    }
+
+    /* 右下角 */
+    .next-level>span::after {
+      bottom: 0;
+      right: 0;
+      border-width: 0 3px 3px 0;
+      border-radius: 0 0 10px 0;
+    }
+
+    .show-reward-btn {
+      display: none;
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #FFD700, #FF0000, #FFD700);
+      background-size: 200% 200%;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      position: fixed;
+      bottom: 100px;
+      /* 上面的按钮 */
+      right: 30px;
+      font-size: 20px;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      animation:
+        buttonGlow 1.5s ease-in-out infinite alternate,
+        gradientMove 3s ease infinite;
+      overflow: hidden;
+    }
+
+    .show-reward-btn::before,
+    .show-reward-btn::after,
+    .show-reward-btn>span::before,
+    .show-reward-btn>span::after {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border-color: #FFD700;
+      border-style: solid;
+      pointer-events: none;
+      animation: borderGlow 1.5s ease-in-out infinite alternate;
+    }
+
+    /* 左上角 */
+    .show-reward-btn::before {
+      top: 0;
+      left: 0;
+      border-width: 3px 0 0 3px;
+      border-radius: 10px 0 0 0;
+    }
+
+    /* 右上角 */
+    .show-reward-btn::after {
+      top: 0;
+      right: 0;
+      border-width: 3px 3px 0 0;
+      border-radius: 0 10px 0 0;
+    }
+
+    /* 左下角 */
+    .show-reward-btn>span::before {
+      bottom: 0;
+      left: 0;
+      border-width: 0 0 3px 3px;
+      border-radius: 0 0 0 10px;
+    }
+
+    /* 右下角 */
+    .show-reward-btn>span::after {
+      bottom: 0;
+      right: 0;
+      border-width: 0 3px 3px 0;
+      border-radius: 0 0 10px 0;
+    }
+
+    @keyframes borderGlow {
+      from {
+        border-color: #FFD700;
+        box-shadow: 0 0 5px #FFD700;
+      }
+
+      to {
+        border-color: #FFA500;
+        box-shadow: 0 0 15px #FFA500;
+      }
+    }
+
+    @keyframes buttonGlow {
+      from {
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+      }
+
+      to {
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+      }
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* 视频奖励相关样式 */
+    .reward-video-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      /* 稍微调暗整体背景，让视频更突出 */
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .reward-video-wrapper {
+      position: relative;
+      width: 95%;
+      /* 增加宽度 */
+      max-width: 1600px;
+      /* 增加最大宽度 */
+      height: 90vh;
+      /* 增加高度 */
+      background: transparent;
+      border-radius: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    }
+
+    .video-player-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .reward-video {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .close-video {
+      position: absolute;
+      top: -240px;
+      /* 调整上下位置，数值越大越往下 */
+      right: 20px;
+      /* 调整左右位置，数值越大越往左 */
+      width: 30px;
+      height: 30px;
+      background: #FFD700;
+      border: none;
+      border-radius: 50%;
+      color: #FF0000;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'KoseFont', Arial, sans-serif;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      transition: all 0.3s ease;
+      z-index: 1001;
+    }
+
+    .close-video:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    }
+
+    /* 搜索栏样式 */
+    .cheat-code-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    .cheat-code-input {
+      width: 200px;
+      padding: 12px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      color: #FFD700;
+      font-family: 'KoseFont', Arial, sans-serif;
+      font-size: 16px;
+      outline: none;
+      border-radius: 0;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .cheat-code-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .cheat-success {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      color: #FFD700;
+      font-family: 'KoseFont', Arial, sans-serif;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      text-shadow: 0 0 5px #FFD700;
+    }
+
+    .cheat-success.show {
+      opacity: 1;
+    }
+
+    /* 添加新的视频播放器相关样式 */
+    .video-player-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 自定义控制栏 */
+    .custom-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(139, 0, 0, 0.7);
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 0 0 8px 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .video-player-container:hover .custom-controls {
+      opacity: 1;
+    }
+
+    /* 播放/暂停按钮 */
+    .play-pause-btn {
+      background: #FFD700;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    /* 改进进度条样式 */
+    .progress-container {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 215, 0, 0.2);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: height 0.2s ease;
+    }
+
+    .progress-container:hover {
+      height: 12px;
+      /* 悬浮时增加高度 */
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #FFD700;
+      border-radius: 4px;
+      width: 0%;
+      position: relative;
+      transition: width 0.1s linear;
+    }
+
+    /* 添加进度条拖动时的视觉反馈 */
+    .progress-container.dragging {
+      height: 12px;
+    }
+
+    .progress-container.dragging .progress-bar {
+      background: #FFA500;
+    }
+
+    .progress-handle {
+      position: absolute;
+      right: -30px;
+      top: -65px;
+      width: 80px;
+      height: 80px;
+      background-image: url('images/daimao1.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      pointer-events: none;
+      transition: all 0.1s linear;
+      animation: daimaoFloat 2s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
+    /* 添加呆猫浮动动画 */
+    @keyframes daimaoFloat {
+      0% {
+        transform: translateY(0) rotate(-5deg);
+      }
+
+      25% {
+        transform: translateY(-15px) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(0) rotate(5deg);
+      }
+
+      75% {
+        transform: translateY(-15px) rotate(0deg);
+      }
+
+      100% {
+        transform: translateY(0) rotate(-5deg);
+      }
+    }
+
+    /* 时间显示 */
+    .time-display {
+      color: #FFD700;
+      font-family: 'KoseFont', Arial, sans-serif;
+      font-size: 14px;
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+      min-width: 100px;
+      text-align: center;
+    }
+
+    /* 控制按钮样式 */
+    .control-btn {
+      background: #FFD700;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      color: #8B0000;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'KoseFont', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+    }
+
+    /* 修改倍速菜单样式 */
+    .speed-menu {
+      position: absolute;
+      bottom: 100%;
+      background: rgba(139, 0, 0, 0.9);
+      border-radius: 4px;
+      padding: 5px;
+      display: none;
+    }
+
+    .speed-option {
+      padding: 5px 10px;
+      color: #FFD700;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .speed-option:hover {
+      background: rgba(255, 215, 0, 0.2);
+    }
+
+    /* Tooltip 样式 */
+    .tooltip {
+      position: relative;
+    }
+
+    .tooltip::after {
+      content: attr(data-tooltip) " - " attr(data-status);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      background: rgba(139, 0, 0, 0.9);
+      color: #FFD700;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s;
+      margin-bottom: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      z-index: 1002;
+    }
+
+    .tooltip:hover::after {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* 添加 .show 类的样式 */
+    .speed-menu.show {
+      display: block;
+    }
+
+    /* 虫棍呆猫动画 */
+    @keyframes floatAndRotate {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      25% {
+        transform: translateY(-10px) rotate(5deg);
+      }
+
+      50% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      75% {
+        transform: translateY(10px) rotate(-5deg);
+      }
+
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+    }
+
+    .chonggundaimao {
+      position: absolute;
+      top: 40px;
+      right: 10px;
+      width: 300px;
+      height: auto;
+      z-index: 1001;
+      animation: floatAndRotate 3s ease-in-out infinite;
+      transform-origin: center center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .chonggundaimao:hover {
+      transform: scale(1.1) rotate(10deg);
+    }
+
+    /* 视频切换按钮样式 */
+    a.aki-btn {
+      position: absolute;
+      top: 380px;
+      right: 10px;
+      transform: translateY(-50%);
+      width: 300px;
+      height: 90px;
+      background: linear-gradient(90deg, #8B0000, #FFD700);
+      border-radius: 8px;
+      font-size: 16px;
+      color: #ffffff;
+      overflow: hidden;
+      z-index: 1002;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    a.aki-btn span.icon,
+    a.aki-btn span.txt {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #FFD700;
+      transition: all 0.5s ease;
+      z-index: 2;
+      backface-visibility: hidden;
+    }
+
+    a.aki-btn span.icon {
+      transform: rotateY(-180deg);
+    }
+
+    a.aki-btn span.txt {
+      transform: rotateY(0deg);
+      font-size: 20px;
+      padding: 0 10px;
+    }
+
+    a.aki-btn:hover span.txt {
+      transform: rotateY(-180deg);
+    }
+
+    a.aki-btn:hover span.icon {
+      transform: rotateY(0deg);
+    }
+
+    a.aki-btn span.icon svg {
+      width: 40px;
+      fill: #FFD700;
+    }
+
+    /* 添加快进快退的视觉反馈样式 */
+    .skip-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 215, 0, 0.8);
+      color: #8B0000;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 20px;
+      font-family: 'KoseFont', Arial, sans-serif;
+      animation: fadeOut 0.5s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
+
+    /* 循环播放按钮激活状态 */
+    #loopBtn.control-btn.active {
+      background-color: #FF0000 !important;
+      /* 鲜艳的红色 */
+      color: #FFD700 !important;
+      /* 金色文字 */
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+      /* 红色阴影 */
+    }
+
+    /* 使用相同的返回按钮样式 */
+    .back-btn {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #FFD700, #FF0000, #FFD700);
+      background-size: 200% 200%;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-decoration: none;
+      animation: gradientMove 3s linear infinite;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+      z-index: 1000;
+    }
+
+    .back-btn:hover {
+      animation: buttonGlow 1s ease-in-out infinite alternate;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 添加春节装饰元素 -->
+  <div class="fu fu-left">福</div>
+  <div class="fu fu-right">福</div>
+  <div class="lantern lantern-left"></div>
+  <div class="lantern lantern-right"></div>
+  <div class="couplet couplet-left">新春快乐呆猫陪</div>
+  <div class="couplet couplet-right">瑞雪丰年福气来</div>
+
+  <!-- 修改作弊码输入框结构 -->
+  <div class="cheat-code-container">
+    <div class="cheat-code-wrapper">
+      <span></span>
+      <input type="text" class="cheat-code-input" id="cheatCodeInput" placeholder="作弊码：tiaoguo2
+      ">
+    </div>
+    <div class="cheat-success" id="cheatSuccess">密令生效！</div>
+  </div>
+
+  <h1 class="level-title">第二关 - 呆猫翻转进阶</h1>
+  <div class="game-container" id="gameContainer"></div>
+  <!-- 下一关按钮 -->
+  <a href="fanpai-level3.html" class="next-level" id="nextLevel">
+    <span></span>
+    下一关
+  </a>
+
+  <!-- 显示奖励按钮 -->
+  <button class="show-reward-btn" id="showRewardBtn">
+    <span></span>
+    来自呆猫的奖励小视频
+  </button>
+
+  <!-- 修改视频播放器结构 -->
+  <div class="reward-video-container" id="rewardVideoContainer">
+    <div class="reward-video-wrapper">
+      <div class="video-player-container">
+        <video class="reward-video" id="rewardVideo">
+          <source src="videos/fanzhuanjiangli2-1.mp4" type="video/mp4" id="videoSource">
+          你的浏览器不支持视频播放。
+        </video>
+        <a href="javascript:;" class="aki-btn" id="switchVideoBtn">
+          <span class="txt">呆猫提醒：点这里可以看见该关卡的第二个奖励视频喵</span>
+          <span class="icon">
+            <svg t="1691995071208" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+              p-id="2968" width="200" height="200">
+              <path
+                d="M729.6 448H128v85.333333h601.6L597.333333 665.6l59.733334 59.733333 234.666666-234.666666L661.333333 256l-59.733333 59.733333 128 132.266667z"
+                p-id="2969"></path>
+            </svg>
+          </span>
+        </a>
+        <div class="custom-controls">
+          <button class="play-pause-btn tooltip" id="playPauseBtn" data-tooltip="播放/暂停">⏸</button>
+          <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar">
+              <div class="progress-handle"></div>
+            </div>
+          </div>
+          <div class="time-display">
+            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+          </div>
+          <div class="speed-control" style="position: relative;">
+            <button class="control-btn tooltip" id="speedBtn" data-tooltip="播放速度" data-status="1.0x">1.0x</button>
+            <div class="speed-menu" id="speedMenu">
+              <div class="speed-option" data-speed="0.5">0.5x</div>
+              <div class="speed-option" data-speed="1.0">1.0x</div>
+              <div class="speed-option" data-speed="1.5">1.5x</div>
+              <div class="speed-option" data-speed="2.0">2.0x</div>
+            </div>
+          </div>
+          <button class="control-btn tooltip" id="loopBtn" data-tooltip="循环播放" data-status="循环播放已启用">🔁</button>
+          <button class="control-btn tooltip" id="downloadBtn" data-tooltip="下载视频">💾</button>
+          <div class="volume-container">
+            <button class="volume-btn tooltip" id="volumeBtn" data-tooltip="静音/取消静音" data-status="">🔊</button>
+            <input type="range" class="volume-slider tooltip" id="volumeSlider" min="0" max="1" step="0.1" value="1"
+              data-tooltip="音量调节" data-status="100%">
+          </div>
+        </div>
+        <img src="images/chonggundaimao2.png" alt="虫棍呆猫" class="chonggundaimao">
+      </div>
+      <button class="close-video tooltip" id="closeVideo" data-tooltip="关闭视频">×</button>
+    </div>
+  </div>
+
+  <!-- 添加返回按钮 -->
+  <a href="fanpai-level1.html" class="back-btn">返回上一关</a>
+
+  <script>
+    // 第二关使用的图片（6张，每张出现两次）
+    const images = [
+      'images/chonggundaimao.png',
+      'images/taidaodaimao.png',
+      'images/dajiandaimao.png',
+      'images/shuangdaodaimao.png',
+      'images/dunfudaimao.png',
+      'images/zhongnudaimao.png'
+    ];
+
+    let cards = [...images, ...images]; // 复制一份，形成对子
+    let flippedCards = [];
+    let matchedPairs = 0;
+
+    // 洗牌函数
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // 创建卡片
+    function createCards() {
+      const gameContainer = document.getElementById('gameContainer');
+      shuffle(cards).forEach((image, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.image = image;
+
+        const front = document.createElement('div');
+        front.className = 'card-front';
+        const img = document.createElement('img');
+        img.src = image;
+        front.appendChild(img);
+
+        const back = document.createElement('div');
+        back.className = 'card-back';
+
+        card.appendChild(front);
+        card.appendChild(back);
+
+        card.addEventListener('click', flipCard);
+        gameContainer.appendChild(card);
+      });
+    }
+
+    // 翻牌函数
+    function flipCard() {
+      if (flippedCards.length === 2) return;
+      if (this.classList.contains('flipped')) return;
+
+      this.classList.add('flipped');
+      flippedCards.push(this);
+
+      if (flippedCards.length === 2) {
+        checkMatch();
+      }
+    }
+
+    // 检查配对
+    function checkMatch() {
+      const [card1, card2] = flippedCards;
+      const match = card1.dataset.image === card2.dataset.image;
+
+      if (match) {
+        matchedPairs++;
+        flippedCards = [];
+
+        // 检查是否完成本关
+        if (matchedPairs === images.length) {
+          setTimeout(() => {
+            document.getElementById('nextLevel').style.display = 'block';
+            showRewardVideo(); // 通关后显示并自动播放奖励视频
+          }, 500);
+        }
+      } else {
+        setTimeout(() => {
+          card1.classList.remove('flipped');
+          card2.classList.remove('flipped');
+          flippedCards = [];
+        }, 1000);
+      }
+    }
+
+    // 视频相关功能
+    const videoContainer = document.getElementById('rewardVideoContainer');
+    const video = document.getElementById('rewardVideo');
+    const closeBtn = document.getElementById('closeVideo');
+    const showRewardBtn = document.getElementById('showRewardBtn');
+
+    function showRewardVideo() {
+      const rewardVideoContainer = document.getElementById('rewardVideoContainer');
+      const backBtn = document.querySelector('.back-btn'); // 获取返回按钮
+
+      rewardVideoContainer.style.display = 'flex';
+      backBtn.style.display = 'none'; // 隐藏返回按钮
+
+      // 播放视频
+      video.play().catch(error => {
+        console.log("视频自动播放失败:", error);
+      });
+    }
+
+    closeBtn.addEventListener('click', () => {
+      const rewardVideoContainer = document.getElementById('rewardVideoContainer');
+      const backBtn = document.querySelector('.back-btn'); // 获取返回按钮
+
+      rewardVideoContainer.style.display = 'none';
+      backBtn.style.display = 'block'; // 显示返回按钮
+
+      // 暂停视频
+      video.pause();
+    });
+
+    showRewardBtn.addEventListener('click', () => {
+      videoContainer.style.display = 'flex';
+      // 不自动播放，等待用户点击播放按钮
+    });
+
+    // 修改作弊码验证逻辑
+    const cheatCodeInput = document.getElementById('cheatCodeInput');
+    const cheatSuccess = document.getElementById('cheatSuccess');
+    const validCheatCodes = {
+      'tiaoguo1': 1,
+      'tiaoguo2': 2,
+      'tiaoguo3': 3,
+      'tiaoguo4': 4
+    };
+
+    cheatCodeInput.addEventListener('input', function () {
+      const code = this.value.trim().toLowerCase();
+      if (validCheatCodes[code]) {
+        if (validCheatCodes[code] === 2) {
+          matchedPairs = images.length;
+          document.getElementById('nextLevel').style.display = 'block';
+          showRewardVideo();
+          this.value = '';
+
+          cheatSuccess.classList.add('show');
+          setTimeout(() => {
+            cheatSuccess.classList.remove('show');
+          }, 2000);
+        } else {
+          this.value = '';
+          cheatSuccess.textContent = '此密令用于其他关卡！';
+          cheatSuccess.classList.add('show');
+          setTimeout(() => {
+            cheatSuccess.classList.remove('show');
+            cheatSuccess.textContent = '密令生效！';
+          }, 2000);
+        }
+      }
+    });
+
+    // 视频播放器相关功能
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressContainer = document.getElementById('progressContainer');
+    const currentTimeSpan = document.getElementById('currentTime');
+    const durationSpan = document.getElementById('duration');
+    const speedBtn = document.getElementById('speedBtn');
+    const speedMenu = document.getElementById('speedMenu');
+    const loopBtn = document.getElementById('loopBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const volumeBtn = document.getElementById('volumeBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const videoSource = document.getElementById('videoSource');
+
+    let currentVideo = 1;  // 跟踪当前播放的视频
+
+    // 修改播放按钮初始状态
+    playPauseBtn.textContent = '⏸';  // 改为暂停符号
+
+    // 修改播放/暂停按钮点击事件
+    playPauseBtn.addEventListener('click', () => {
+      if (video.paused) {
+        video.play().then(() => {
+          playPauseBtn.textContent = '⏸';  // 播放时显示暂停符号
+        });
+      } else {
+        video.pause();
+        playPauseBtn.textContent = '▶';    // 暂停时显示播放符号
+      }
+    });
+
+    // 视频加载完成后只设置总时长和循环，不自动播放
+    video.addEventListener('loadedmetadata', () => {
+      durationSpan.textContent = formatTime(video.duration);
+      video.loop = true;
+      loopBtn.classList.add('active');
+      playPauseBtn.textContent = '▶';  // 初始显示播放按钮
+    });
+
+    // 进度条更新
+    video.addEventListener('timeupdate', () => {
+      const progress = (video.currentTime / video.duration) * 100;
+      progressBar.style.width = progress + '%';
+      currentTimeSpan.textContent = formatTime(video.currentTime);
+    });
+
+    // 格式化时间
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      seconds = Math.floor(seconds % 60);
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // 倍速控制
+    speedBtn.addEventListener('click', () => {
+      speedMenu.classList.toggle('show');
+    });
+
+    document.querySelectorAll('.speed-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const speed = parseFloat(option.dataset.speed);
+        video.playbackRate = speed;
+        speedBtn.textContent = speed + 'x';
+        speedBtn.setAttribute('data-status', `${speed}x`);
+        speedMenu.classList.remove('show');
+      });
+    });
+
+    // 点击其他地方关闭倍速菜单
+    document.addEventListener('click', (e) => {
+      if (!speedBtn.contains(e.target) && !speedMenu.contains(e.target)) {
+        speedMenu.classList.remove('show');
+      }
+    });
+
+    // 循环播放控制
+    loopBtn.addEventListener('click', () => {
+      video.loop = !video.loop;
+      loopBtn.classList.toggle('active');
+      if (video.loop) {
+        loopBtn.setAttribute('data-status', '循环播放已启用');
+      } else {
+        loopBtn.setAttribute('data-status', '循环播放已关闭');
+      }
+    });
+
+    // 下载视频
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = videoSource.src;
+      link.download = 'fanzhuanjiangli2-' + currentVideo + '.mp4';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // 音量控制
+    volumeBtn.addEventListener('click', () => {
+      if (video.volume > 0) {
+        video.volume = 0;
+        volumeBtn.textContent = '🔇';
+        volumeSlider.value = 0;
+        volumeBtn.setAttribute('data-status', '已静音');
+      } else {
+        video.volume = volumeSlider.value;
+        volumeBtn.textContent = '🔊';
+        volumeBtn.setAttribute('data-status', '');
+      }
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      video.volume = volumeSlider.value;
+      volumeBtn.textContent = volumeSlider.value > 0 ? '🔊' : '🔇';
+      const percentage = Math.round(volumeSlider.value * 100);
+      volumeSlider.setAttribute('data-status', `${percentage}%`);
+    });
+
+    // 视频切换按钮
+    const switchVideoBtn = document.getElementById('switchVideoBtn');
+    const switchBtnText = switchVideoBtn.querySelector('.txt');
+
+    switchVideoBtn.addEventListener('click', () => {
+      const wasPlaying = !video.paused;
+      // 修改视频切换逻辑，支持5个视频
+      currentVideo = currentVideo % 5 + 1; // 1->2->3->4->5->1
+      videoSource.src = `videos/fanzhuanjiangli2-${currentVideo}.mp4`;
+
+      // 更新按钮文本
+      switch (currentVideo) {
+        case 1:
+          switchBtnText.textContent = '呆猫提醒：点这里可以看见该关卡的第二个奖励视频喵';
+          break;
+        case 2:
+          switchBtnText.textContent = '呆猫提醒：点这里可以看见该关卡的第三个奖励视频喵';
+          break;
+        case 3:
+          switchBtnText.textContent = '呆猫提醒：点这里可以看见该关卡的第四个奖励视频喵';
+          break;
+        case 4:
+          switchBtnText.textContent = '呆猫提醒：点这里可以看见该关卡的第五个奖励视频喵';
+          break;
+        case 5:
+          switchBtnText.textContent = '呆猫提醒：点这里可以返回该关卡的第一个奖励视频喵';
+          break;
+      }
+
+      video.load();
+      video.addEventListener('loadedmetadata', function onLoaded() {
+        if (wasPlaying) {
+          video.play()
+            .then(() => {
+              playPauseBtn.textContent = '⏸';
+            })
+            .catch(error => {
+              console.log("视频播放失败:", error);
+            });
+        }
+        video.removeEventListener('loadedmetadata', onLoaded);
+      });
+    });
+
+    // 确保在视频加载后添加键盘控制
+    document.addEventListener('keydown', (e) => {
+      // 只有在视频容器显示时才响应键盘控制
+      if (document.getElementById('rewardVideoContainer').style.display === 'flex') {
+        const skipTime = 5; // 快进/快退的秒数
+
+        switch (e.key) {
+          case 'ArrowRight':
+            e.preventDefault(); // 防止页面滚动
+            // 快进5秒
+            video.currentTime = Math.min(video.currentTime + skipTime, video.duration);
+            break;
+          case 'ArrowLeft':
+            e.preventDefault(); // 防止页面滚动
+            // 快退5秒
+            video.currentTime = Math.max(video.currentTime - skipTime, 0);
+            break;
+          case ' ':
+            e.preventDefault(); // 防止页面滚动
+            if (video.paused) {
+              video.play().then(() => {
+                playPauseBtn.textContent = '⏸';
+              });
+            } else {
+              video.pause();
+              playPauseBtn.textContent = '▶';
+            }
+            break;
+        }
+      }
+    });
+
+    // 添加视觉反馈
+    function showSkipIndicator(direction) {
+      const indicator = document.createElement('div');
+      indicator.className = 'skip-indicator';
+      indicator.textContent = direction === 'right' ? '+5s' : '-5s';
+      video.parentElement.appendChild(indicator);
+      setTimeout(() => indicator.remove(), 500);
+    }
+
+    // 初始化游戏
+    createCards();
+  </script>
+</body>
+
+</html>

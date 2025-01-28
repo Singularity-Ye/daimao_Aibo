@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <title>cursor工具领取</title>
+  <style>
+    /* ... existing code ... */
+    @font-face {
+      font-family: 'KoseFont';
+      src: url('fonts/KosefontP-JP.ttf') format('truetype');
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #FF0000, #FFD700);
+      font-family: 'KoseFont', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-title {
+      color: #00ffff;
+      font-size: 48px;
+      margin: 30px 0;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+      text-align: center;
+      animation: titleGlow 2s infinite;
+    }
+
+    #gameContainer {
+      width: 800px;
+      height: auto;
+      min-height: 600px;
+      background: rgba(139, 0, 0, 0.1);
+      border: 5px solid #FFD700;
+      border-radius: 20px;
+      position: relative;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 0;
+      margin-bottom: 50px;
+    }
+
+    .blessing-text {
+      color: #00ffff;
+      font-size: 24px;
+      line-height: 1.8;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+      margin: 20px;
+      text-align: center;
+      padding: 0 40px;
+      font-family: 'KoseFont', Arial, sans-serif;
+      animation: textFloat 3s ease-in-out infinite;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background: #FFD700;
+      color: #8B0000;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 18px;
+      font-family: 'KoseFont', Arial, sans-serif;
+      z-index: 1000;
+    }
+
+    .download-btn {
+      padding: 15px 30px;
+      background: linear-gradient(145deg, #FFD700, #FFA500);
+      color: #8B0000;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 30px;
+      transition: all 0.3s ease;
+      animation: pulse 2s infinite;
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .download-btn:hover {
+      transform: scale(1.1);
+      background: linear-gradient(145deg, #FFA500, #FF8C00);
+      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.5);
+    }
+
+    @keyframes titleGlow {
+
+      0%,
+      100% {
+        text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+      }
+
+      50% {
+        text-shadow: 0 0 30px rgba(0, 255, 255, 0.9);
+      }
+    }
+
+    @keyframes textFloat {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="game.html" class="back-btn">返回主页</a>
+  <h1 class="game-title">老大，你真的想玩年兽快跑吗？</h1>
+  <div id="gameContainer">
+    <div class="blessing-text">
+      其实呢，这个游戏也是一个彩蛋喵！<br><br>
+
+      (PS: 其实是搓游戏搓累了，不想再动了<br>
+      而且这种形似天天酷跑玩法的小游戏有太多地方可以设计了<br>
+      我感觉短时间不能搓出一个满意的小游戏<br>
+      遂放弃)<br><br>
+
+      呆猫觉得老大已经玩了这么多游戏<br>
+      一定对cursor这个AI助手产生了浓厚的兴趣<br>
+      如果老大已经使用过了cursor<br>
+      想必也发现了它的一个小缺点（对于我这种穷人来说）：<br>
+      免费使用次数是有限制的！<br><br>
+
+      但是呢，作为一个资深的网上冲浪达人<br>
+      呆猫当然掌握了一些小技巧！<br><br>
+
+      比如说，如何通过修改本地机器码<br>
+      来刷新cursor的免费使用次数！<br><br>
+
+      这个技巧已经有大佬整理成了详细的教程<br>
+      而呆猫千辛万苦偷到了这个教程<br>
+      （PS:因为改机器码的脚本已不适用于新版cursor）<br>
+      （这是我在1月28日当天发现的问题）<br>
+      （当然，也可能是我自己的问题，不知道别人有没有这种情况）<br>
+      (顺便配上了新旧版cursor的联合使用技巧)<br>
+      都打包在下面的压缩包里了喵！<br><br>
+
+      不过要提醒老大的是<br>
+      这个方法仅供学习交流使用<br>
+      如果觉得cursor好用的话<br>
+      (PS:都说cline+deepseek好用，实际上用了cursor就回不去了))<br>
+      还是建议老大支持正版喵！(PS:真的好贵)<br>
+    </div>
+    <a href="compression/cursor-tool.zip" class="download-btn" download>点击下载教程和工具</a>
+  </div>
+</body>
+
+</html>

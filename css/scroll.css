@@ -1,0 +1,121 @@
+/* 添加字体声明 */
+@font-face {
+  font-family: 'KoseFont';
+  src: url('../fonts/Kosefont-JP.ttf') format('truetype');
+}
+
+body {
+  margin: 0;
+  background-color: #23272a;
+  color: white;
+  font-family: 'KoseFont', Arial, sans-serif;
+  /* 修改字体 */
+  min-height: 100vh;
+}
+
+.scroll-content {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 3;
+  /* 添加最小高度确保内容足够长 */
+  min-height: 200vh;
+}
+
+.section {
+  background: rgba(255, 255, 255, 0.1);
+  margin: 20px 0;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.section:hover {
+  transform: translateY(-5px);
+}
+
+h1 {
+  color: #03e9f4;
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 40px;
+  text-shadow: 0 0 10px rgba(3, 233, 244, 0.5);
+  font-family: 'KoseFont', Arial, sans-serif;
+  /* 修改字体 */
+}
+
+h2 {
+  color: #03e9f4;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+  font-family: 'KoseFont', Arial, sans-serif;
+  /* 修改字体 */
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  font-family: 'KoseFont', Arial, sans-serif;
+  /* 修改字体 */
+}
+
+.quote {
+  font-style: italic;
+  color: #03e9f4;
+  padding: 20px;
+  border-left: 4px solid #03e9f4;
+  margin: 20px 0;
+  font-family: 'KoseFont', Arial, sans-serif;
+  /* 修改字体 */
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #23272a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #03e9f4;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00b0b9;
+}
+
+/* 添加主内容区域的初始状态 */
+#mainContent {
+  display: none;
+  opacity: 1;
+  transition: opacity 1s ease-in;
+}
+
+/* 当显示时的状态 */
+#mainContent.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* 添加新的内容卡片样式 */
+.content-card {
+  background: rgba(255, 255, 255, 0.1);
+  margin: 40px 0;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.content-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(3, 233, 244, 0.2);
+}

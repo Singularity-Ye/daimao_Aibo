@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新春接福游戏</title>
+  <style>
+    @font-face {
+      font-family: 'KosefontJP';
+      src: url('fonts/Kosefont-JP.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'KosefontPJP';
+      src: url('fonts/KosefontP-JP.ttf') format('truetype');
+    }
+
+    /* 基础样式 */
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      font-family: 'KosefontJP', sans-serif;
+      /* 添加默认字体 */
+      /* 确保body占满整个视口高度 */
+    }
+
+    #gameContainer {
+      width: 700vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      margin-top: -60px;
+      /* 抵消浏览器导航栏的高度 */
+      padding-top: 60px;
+      /* 添加内边距以保持内容不被遮挡 */
+    }
+
+    /* 添加背景容器样式 */
+    .background-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    /* 背景图片容器 */
+    .background-section {
+      position: absolute;
+      width: 100vw;
+      height: 140vh;
+      background: url('images/shanshui.png') no-repeat center;
+      background-size: 100vw 140vh;
+      top: -30vh;
+    }
+
+    /* 定位7个背景图片 */
+    .background-container .background-section:nth-child(1) {
+      left: 0;
+    }
+
+    .background-container .background-section:nth-child(2) {
+      left: 100vw;
+    }
+
+    .background-container .background-section:nth-child(3) {
+      left: 200vw;
+    }
+
+    .background-container .background-section:nth-child(4) {
+      left: 300vw;
+    }
+
+    .background-container .background-section:nth-child(5) {
+      left: 400vw;
+    }
+
+    .background-container .background-section:nth-child(6) {
+      left: 500vw;
+    }
+
+    .background-container .background-section:nth-child(7) {
+      left: 600vw;
+    }
+
+    /* 玩家样式 */
+    #player {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      z-index: 1000;
+      background: url('images/daimaoyou.png') no-repeat center/contain;
+      top: 88vh;
+    }
+
+    /* 福字样式 */
+    .fu,
+    .dafu,
+    .caochonggun,
+    .shuangdao,
+    .dajian {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      animation: fall linear 4s;
+      user-select: none;
+      border-radius: 50%;
+      z-index: 900;
+    }
+
+    .fu {
+      background: url('images/fu1.png') no-repeat center/contain;
+    }
+
+    .dafu {
+      background: url('images/dafu.png') no-repeat center/contain;
+    }
+
+    .caochonggun {
+      background: url('images/caochonggun1.png') no-repeat center/contain;
+    }
+
+    .shuangdao {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      animation: fall linear 4s;
+      user-select: none;
+      border-radius: 50%;
+      z-index: 900;
+      background: url('images/shuangdao1.png') no-repeat center/contain;
+    }
+
+    .dajian {
+      background: url('images/dajian1.png') no-repeat center/contain;
+    }
+
+    .zhongnu {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      animation: fall linear 4s;
+      user-select: none;
+      border-radius: 50%;
+      z-index: 900;
+      background: url('images/zhongnu1.png') no-repeat center/contain;
+    }
+
+    /* 添加太刀样式 */
+    .taidao {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      animation: fall linear 4s;
+      user-select: none;
+      border-radius: 50%;
+      z-index: 900;
+      background: url('images/taidao1.png') no-repeat center/contain;
+    }
+
+    @keyframes fall {
+      from {
+        top: -60px;
+      }
+
+      to {
+        top: 100vh;
+      }
+    }
+
+    /* 返回按钮样式 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: rgba(142, 207, 206, 0.9);
+      border-radius: 10px;
+      text-decoration: none;
+      color: #3CB371;
+      /* 改为翡翠绿色 */
+      font-family: 'KosefontJP', sans-serif;
+      z-index: 1000;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      /* 添加文字阴影效果 */
+      text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        0 2px 0 #000;
+    }
+
+    /* 积分框样式 */
+    #scoreBox {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(142, 207, 206, 0.9);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 24px;
+      font-family: 'KosefontPJP', sans-serif;
+      z-index: 2000;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      /* 添加文字效果 */
+      text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        0 2px 0 #000,
+        2px 0 0 #000;
+      color: #3CB371;
+      /* 翡翠绿色 */
+    }
+
+    #scoreValue {
+      color: #FF4D4D;
+      font-weight: bold;
+      text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    }
+
+    /* 在style标签中添加状态栏样式 */
+    #statusBar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(142, 207, 206, 0.9);
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      gap: 10px;
+      z-index: 2000;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-icon {
+      width: 40px;
+      height: 40px;
+      position: relative;
+      opacity: 0.5;
+      /* 未激活时半透明 */
+    }
+
+    .status-icon.active {
+      opacity: 1;
+      /* 激活时完全不透明 */
+    }
+
+    .status-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .tooltip {
+      position: relative;
+    }
+
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #00BFFF;
+      border-radius: 5px;
+      font-size: 14px;
+      white-space: nowrap;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s;
+      text-shadow: 1px 1px 0 #000;
+      margin-bottom: 5px;
+    }
+
+    .tooltip:hover::after {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* 在style标签中添加吸取动画 */
+    @keyframes attract {
+      to {
+        transform: scale(0.5);
+        opacity: 0.7;
+      }
+    }
+
+    /* 在 style 标签中添加计时器样式 */
+    #timerBox {
+      position: fixed;
+      top: 20px;
+      right: 50%;
+      transform: translateX(50%);
+      background: rgba(142, 207, 206, 0.9);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 24px;
+      font-family: 'KosefontPJP', sans-serif;
+      z-index: 2000;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      margin-right: -200px;
+      /* 添加文字效果 */
+      text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        0 2px 0 #000,
+        2px 0 0 #000,
+        0 -2px 0 #000,
+        -2px 0 0 #000;
+      color: #3CB371;
+    }
+
+    #timerValue {
+      color: #FF4D4D;
+      font-weight: bold;
+      text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    }
+
+    /* 修改游戏结束弹窗样式 */
+    #gameOverModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      /* 使用视口高度 */
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      overflow-y: auto;
+      /* 允许内容滚动 */
+    }
+
+    #gameOverModal h2 {
+      color: #FF4D4D;
+      margin: 20px 0;
+      font-size: 36px;
+      text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    }
+
+    /* 修改奖励视频容器样式 */
+    #rewardVideos {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      width: 80%;
+      /* 增加宽度以容纳更多按钮 */
+      margin: 20px auto;
+      padding: 20px;
+      max-height: 70vh;
+      /* 限制最大高度 */
+      overflow-y: auto;
+      /* 添加滚动条 */
+    }
+
+    /* 添加滚动条样式 */
+    #rewardVideos::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #rewardVideos::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    #rewardVideos::-webkit-scrollbar-thumb {
+      background: rgba(142, 207, 206, 0.6);
+      border-radius: 4px;
+    }
+
+    #rewardVideos::-webkit-scrollbar-thumb:hover {
+      background: rgba(142, 207, 206, 0.8);
+    }
+
+    /* 修改按钮样式 */
+    a.aki-btn {
+      text-decoration: none;
+      line-height: 1.2;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 220px;
+      height: 60px;
+      background: linear-gradient(90deg, rgba(142, 207, 206, 0.9), rgba(255, 255, 255, 0.9));
+      border-radius: 12px;
+      font-size: 18px;
+      color: #000;
+      overflow: hidden;
+      position: relative;
+      margin: 10px auto;
+      box-shadow: 0 4px 8px rgba(255, 77, 77, 0.3);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    a.aki-btn span.icon,
+    a.aki-btn span.txt {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: white;
+      transition: all 0.5s ease;
+      z-index: 2;
+      backface-visibility: hidden;
+    }
+
+    a.aki-btn span.txt {
+      transform: rotateY(0deg);
+    }
+
+    a.aki-btn span.icon {
+      transform: rotateY(-180deg);
+    }
+
+    a.aki-btn span.icon svg {
+      width: 30px;
+      fill: #fff;
+    }
+
+    a.aki-btn:hover span.txt {
+      transform: rotateY(-180deg);
+    }
+
+    a.aki-btn:hover span.icon {
+      transform: rotateY(0deg);
+    }
+
+    /* 修改进度文本样式 */
+    .progress-text {
+      color: #FFD700;
+      font-size: 14px;
+      /* 减小字体大小 */
+      margin-top: 5px;
+      text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+    }
+
+    /* 修改底部按钮容器样式 */
+    .bottom-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      width: 60%;
+      margin: 20px auto;
+      margin-left: 230px;
+      /* 使用margin-left来调整位置 */
+    }
+
+    /* 修改底部按钮样式 */
+    .bottom-buttons .aki-btn {
+      /* 只选择底部按钮容器中的按钮 */
+      background: linear-gradient(90deg, rgba(255, 77, 77, 0.9), rgba(255, 179, 179, 0.9));
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 8px rgba(255, 77, 77, 0.3);
+    }
+
+    /* 添加悬停效果 */
+    .bottom-buttons .aki-btn:hover {
+      background: linear-gradient(90deg, rgba(255, 51, 51, 0.9), rgba(255, 153, 153, 0.9));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(255, 77, 77, 0.4);
+    }
+
+    /* 隐藏UI元素 */
+    .hide-ui {
+      display: none;
+    }
+
+    /* 视频按钮样式恢复原来的颜色 */
+    #rewardVideos .aki-btn {
+      background: linear-gradient(90deg, rgba(142, 207, 206, 0.9), rgba(255, 255, 255, 0.9));
+      color: #000;
+    }
+
+    /* 底部按钮保持红色 */
+    .bottom-buttons .aki-btn {
+      background: linear-gradient(90deg, rgba(255, 77, 77, 0.9), rgba(255, 179, 179, 0.9));
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 8px rgba(255, 77, 77, 0.3);
+    }
+
+    .bottom-buttons .aki-btn:hover {
+      background: linear-gradient(90deg, rgba(255, 51, 51, 0.9), rgba(255, 153, 153, 0.9));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(255, 77, 77, 0.4);
+    }
+
+    /* 视频播放器样式 */
+    #videoPlayer {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1000;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    #videoPlayer video {
+      width: 100%;
+      max-width: 800px;
+      border-radius: 5px;
+    }
+
+    #videoPlayer .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    #videoPlayer .controls button {
+      background: none;
+      border: none;
+      color: #00BFFF;
+      cursor: pointer;
+      font-size: 24px;
+      text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+    }
+
+    #videoPlayer .controls .progress {
+      flex-grow: 1;
+      margin: 0 10px;
+      position: relative;
+      height: 10px;
+      background: #333;
+      border-radius: 5px;
+      cursor: pointer;
+      overflow: visible;
+      /* 确保呆猫图片不会被裁剪 */
+    }
+
+    #videoPlayer .controls .progress .thumb {
+      width: 20px;
+      height: 20px;
+      background: #FFD700;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+
+    #videoPlayer .controls .time {
+      color: #FFD700;
+      font-size: 14px;
+      text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+    }
+
+    #videoPlayer .controls .volume {
+      display: flex;
+      align-items: center;
+    }
+
+    #videoPlayer .controls .volume input[type="range"] {
+      -webkit-appearance: none;
+      width: 100px;
+      height: 5px;
+      background: #333;
+      border-radius: 5px;
+      margin-left: 10px;
+    }
+
+    #videoPlayer .controls .volume input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: #FFD700;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    #videoPlayer .controls .volume input[type="range"]::-webkit-slider-runnable-track {
+      -webkit-appearance: none;
+      background: #333;
+      border-radius: 5px;
+    }
+
+    #videoPlayer .controls .speed {
+      position: relative;
+    }
+
+    #videoPlayer .controls .speed .speed-menu {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      background: rgba(47, 79, 79, 0.9);
+      border-radius: 5px;
+      padding: 5px;
+    }
+
+    #videoPlayer .controls .speed .speed-option {
+      color: #00BFFF;
+      text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+      cursor: pointer;
+      /* 改为手型光标 */
+      text-align: center;
+      white-space: nowrap;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    #videoPlayer .controls .speed:hover .speed-menu {
+      display: block;
+    }
+
+    #videoPlayer .controls .save {
+      background: none;
+      border: none;
+      color: #FFD700;
+      cursor: pointer;
+      font-size: 14px;
+      text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+    }
+
+    #videoPlayer .controls .close {
+      background: none;
+      border: none;
+      color: #FFD700;
+      cursor: pointer;
+      font-size: 24px;
+      text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+    }
+
+    /* 添加倍速选项的悬停效果 */
+    .speed-option:hover {
+      background: rgba(0, 191, 255, 0.2);
+    }
+
+    /* 修改倍速显示部分 */
+    #currentSpeed {
+      color: #00BFFF;
+      text-shadow: 1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+      margin-right: 5px;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      padding: 2px 5px;
+    }
+
+    /* 确保 tooltip 样式正确 */
+    .tooltip {
+      position: relative;
+    }
+
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #00BFFF;
+      border-radius: 5px;
+      font-size: 14px;
+      white-space: nowrap;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s;
+      text-shadow: 1px 1px 0 #000;
+      margin-bottom: 5px;
+      z-index: 3002;
+    }
+
+    .tooltip:hover::after {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* 添加鼠标悬停效果 */
+    #currentSpeed:hover {
+      background: rgba(0, 191, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    /* 添加倍速选项的样式 */
+    .speed-menu {
+      display: none;
+      position: absolute;
+      bottom: 120%;
+      /* 增加与按钮的距离，避免被tooltip遮挡 */
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(47, 79, 79, 0.9);
+      border-radius: 5px;
+      padding: 5px;
+      z-index: 3003;
+      /* 确保在tooltip之上 */
+    }
+
+    .speed-option {
+      color: #00BFFF;
+      /* 使用亮蓝色 */
+      padding: 5px 15px;
+      cursor: pointer;
+      /* 改为手型光标 */
+      text-align: center;
+      white-space: nowrap;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    .speed-option:hover {
+      background: rgba(0, 191, 255, 0.2);
+      /* 鼠标悬停时的背景色 */
+      border-radius: 3px;
+    }
+
+    /* 当前速度显示样式 */
+    #currentSpeed {
+      color: #00BFFF;
+      /* 使用亮蓝色 */
+      text-shadow: 1px 1px 0 #000;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+
+    #currentSpeed:hover {
+      background: rgba(0, 191, 255, 0.2);
+    }
+
+    /* 音频播放器样式 */
+    .music-player {
+      position: fixed;
+      top: 20px;
+      left: 250px;
+      /* 改为左侧定位 */
+      text-align: center;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      /* 改为纵向排列 */
+      align-items: center;
+    }
+
+    /* 播放器图片基础样式 */
+    .player-image {
+      width: 60px;
+      /* 增大尺寸 */
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #005bb5;
+      transition: transform 0.5s ease-out;
+      cursor: pointer;
+      transform-origin: center;
+    }
+
+    /* 播放器文字样式调整 */
+    .player-text {
+      margin: 5px 0 0 0;
+      color: #03e9f4;
+      font-family: 'KosefontJP', Arial, sans-serif;
+      font-size: 14px;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      white-space: nowrap;
+      opacity: 0;
+      /* 默认隐藏 */
+      transition: opacity 0.3s ease;
+    }
+
+    /* 鼠标悬停时显示文字 */
+    .music-player:hover .player-text {
+      opacity: 1;
+    }
+
+    /* 播放时的旋转动画 */
+    .player-image.playing {
+      animation: rotate 5s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(var(--rotation));
+      }
+
+      to {
+        transform: rotate(calc(var(--rotation) + 360deg));
+      }
+    }
+
+    /* 播放器图片基础样式 */
+    .player-image {
+      width: 60px;
+      /* 增大尺寸 */
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #005bb5;
+      transition: transform 0.5s ease-out;
+      cursor: pointer;
+      transform-origin: center;
+    }
+
+    /* 播放器文字样式调整 */
+    .player-text {
+      margin: 5px 0 0 0;
+      color: #03e9f4;
+      font-family: 'KosefontJP', Arial, sans-serif;
+      font-size: 14px;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      white-space: nowrap;
+      opacity: 0;
+      /* 默认隐藏 */
+      transition: opacity 0.3s ease;
+    }
+
+    /* 鼠标悬停时显示文字 */
+    .music-player:hover .player-text {
+      opacity: 1;
+    }
+
+    /* 播放时的旋转动画 */
+    .player-image.playing {
+      animation: rotate 5s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(var(--rotation));
+      }
+
+      to {
+        transform: rotate(calc(var(--rotation) + 360deg));
+      }
+    }
+
+    /* 修改结束按钮样式，调整位置 */
+    #endGameButton {
+      position: fixed;
+      top: 20px;
+      left: 120px;
+      transform: translateX(50%);
+      /* 向右移动自身宽度的一半 */
+      background: rgba(142, 207, 206, 0.9);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 24px;
+      font-family: 'KosefontPJP', sans-serif;
+      z-index: 2000;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border: none;
+      cursor: pointer;
+      margin-left: 200px;
+      /* 添加左边距 */
+      /* 添加文字效果 */
+      text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        0 2px 0 #000,
+        2px 0 0 #000;
+      color: #FF4D4D;
+      /* 使用红色以示警告 */
+    }
+
+    #endGameButton:hover {
+      background: rgba(255, 77, 77, 0.9);
+      color: white;
+    }
+
+    /* 游戏规则样式 */
+    .game-rules {
+      position: fixed;
+      top: 80px;
+      left: 20px;
+      z-index: 2000;
+      width: 200px;
+      background: rgba(142, 207, 206, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .game-rules:hover {
+      width: 400px;
+      background: rgba(142, 207, 206, 0.95);
+    }
+
+    .rules-header {
+      padding: 10px 20px;
+      color: #3CB371;
+      font-family: 'KosefontPJP', sans-serif;
+      font-size: 20px;
+      cursor: pointer;
+      text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    }
+
+    .rules-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      padding: 0 20px;
+    }
+
+    .game-rules:hover .rules-content {
+      max-height: 800px;
+      padding-bottom: 20px;
+    }
+
+    .rules-intro {
+      color: #FF4D4D;
+      margin: 10px 0;
+      font-size: 16px;
+      line-height: 1.4;
+      text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+    }
+
+    .rules-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .rule-item img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    .rule-item span {
+      color: #00BFFF;
+      font-size: 14px;
+      line-height: 1.3;
+      text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+    }
+
+    /* 添加动画效果 */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .game-rules:hover .rule-item {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .rule-item:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .rule-item:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .rule-item:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .rule-item:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    .rule-item:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+
+    .rule-item:nth-child(6) {
+      animation-delay: 0.6s;
+    }
+
+    .rule-item:nth-child(7) {
+      animation-delay: 0.7s;
+    }
+
+    /* 修改箭头和提示文本的样式 */
+    .music-hint {
+      position: fixed;
+      top: 100px;
+      left: 255px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 1002;
+      animation: float 2s ease-in-out infinite;
+      /* 添加过渡效果 */
+      transition: opacity 0.3s ease;
+    }
+
+    .music-hint::before {
+      content: '';
+      width: 4px;
+      height: 40px;
+      background-color: rgba(0, 191, 255, 0.9);
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .music-hint::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 12px solid rgba(0, 191, 255, 0.9);
+    }
+
+    .music-hint-text {
+      background: rgba(0, 191, 255, 0.9);
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-family: 'KosefontJP', Arial, sans-serif;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      margin-bottom: 5px;
+      width: 1.5em;
+      /* 设置固定宽度适合一个字 */
+      text-align: center;
+      /* 文字居中 */
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    /* 修改呆猫图片的动画效果 */
+    .progress-daimao {
+      position: absolute;
+      top: -50px;
+      left: 0;
+      width: 70px;
+      height: 70px;
+      transform: translateX(-50%);
+      transition: left 0.1s linear;
+      will-change: left, transform;
+      animation: daimaoFloat 2s ease-in-out infinite;
+      transform-origin: bottom center;
+      /* 设置旋转的原点在底部中心 */
+    }
+
+    /* 添加呆猫浮动动画 */
+    @keyframes daimaoFloat {
+      0% {
+        transform: translateX(-50%) translateY(0) rotate(-5deg);
+      }
+
+      25% {
+        transform: translateX(-50%) translateY(-15px) rotate(0deg);
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(0) rotate(5deg);
+      }
+
+      75% {
+        transform: translateX(-50%) translateY(-15px) rotate(0deg);
+      }
+
+      100% {
+        transform: translateX(-50%) translateY(0) rotate(-5deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 在gameContainer之前添加视频播放器容器 -->
+  <div id="rewardVideoContainer"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000;">
+    <video id="rewardVideo" style="width: 80%; max-height: 80vh; margin: 20px auto; display: block;">
+      <source src="" type="video/mp4">
+      您的浏览器不支持视频播放。
+    </video>
+
+    <!-- 自定义视频控制栏 -->
+    <div class="custom-controls"
+      style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 80%; background: rgba(47, 79, 79, 0.9); padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
+      <button id="playPauseBtn" class="tooltip" data-tooltip="播放/暂停"
+        style="background: none; border: none; color: #00BFFF; cursor: pointer; font-size: 24px; text-shadow: 1px 1px 0 #000;"
+        data-status="播放">▶</button>
+
+      <div class="progress-container"
+        style="flex-grow: 1; height:10px; background: rgba(255,255,255,0.3); border-radius: 5px; position: relative; cursor: pointer;">
+        <div class="progress-bar" style="height: 100%; background: #00BFFF; border-radius: 5px; width: 500px;"></div>
+        <img class="progress-daimao" src="images/daimaoyou.png"
+          style="position: absolute; top: -50px; left: 0; width: 70px; height: 70px; transform: translateX(-50%);">
+      </div>
+
+      <span id="currentTime" style="color: #00BFFF; min-width: 50px;">0:00</span>
+      <span style="color: #00BFFF;">/</span>
+      <span id="duration" style="color: #00BFFF; min-width: 50px;">0:00</span>
+
+      <button id="volumeBtn" class="tooltip" data-tooltip="音量控制"
+        style="background: none; border: none; color: #00BFFF; cursor: pointer; font-size: 20px;">🔊</button>
+      <input id="volumeSlider" type="range" min="0" max="1" step="0.1" value="1" style="width: 100px;">
+
+      <div class="speed-control tooltip" data-tooltip="播放速度" style="position: relative;">
+        <span id="currentSpeed">1.0x</span>
+        <div class="speed-menu">
+          <div class="speed-option" data-speed="0.5">0.5x</div>
+          <div class="speed-option" data-speed="1.0">1.0x</div>
+          <div class="speed-option" data-speed="1.5">1.5x</div>
+          <div class="speed-option" data-speed="2.0">2.0x</div>
+        </div>
+      </div>
+
+      <button id="loopBtn" class="tooltip" data-tooltip="循环播放"
+        style="background: none; border: none; color: #00BFFF; cursor: pointer; font-size: 20px;">🔁</button>
+      <button id="saveBtn" class="tooltip" data-tooltip="保存视频"
+        style="background: none; border: none; color: #00BFFF; cursor: pointer; font-size: 20px;">💾</button>
+      <button id="closeVideo" class="tooltip" data-tooltip="关闭视频"
+        style="background: none; border: none; color: #FF4D4D; cursor: pointer; font-size: 20px;">✖</button>
+    </div>
+  </div>
+
+  <div id="gameContainer">
+    <!-- 先放置所有背景图片 -->
+    <div class="background-container">
+      <div class="background-section"></div>
+      <div class="background-section"></div>
+      <div class="background-section"></div>
+      <div class="background-section"></div>
+      <div class="background-section"></div>
+      <div class="background-section"></div>
+      <div class="background-section"></div>
+    </div>
+
+    <!-- 然后是其他UI元素 -->
+    <div id="scoreBox">得分：<span id="scoreValue">0</span></div>
+    <div id="timerBox">时间：<span id="timerValue">120</span></div>
+    <button id="endGameButton">提前结束</button>
+    <div id="player"></div>
+
+    <!-- 在gameContainer后面添加状态栏 -->
+    <div id="statusBar">
+      <div class="status-icon" id="dafuStatus">
+        <img src="images/dafu.png" alt="大福">
+        <div class="tooltip">双倍得分：未激活</div>
+      </div>
+      <div class="status-icon" id="caochonggunStatus">
+        <img src="images/caochonggun1.png" alt="虫棍">
+        <div class="tooltip">二段跳：未激活</div>
+      </div>
+      <div class="status-icon" id="shuangdaoStatus">
+        <img src="images/shuangdao1.png" alt="双刀">
+        <div class="tooltip">加速：未激活</div>
+      </div>
+      <div class="status-icon" id="dajianStatus">
+        <img src="images/dajian1.png" alt="大剑">
+        <div class="tooltip">变大：未激活</div>
+      </div>
+      <div class="status-icon" id="zhongnuStatus">
+        <img src="images/zhongnu1.png" alt="老金重弩">
+        <div class="tooltip">吸取道具：未激活</div>
+      </div>
+      <div class="status-icon" id="taidaoStatus">
+        <img src="images/taidao1.png" alt="太刀">
+        <div class="tooltip">冲刺：未激活</div>
+      </div>
+    </div>
+
+    <!-- 返回按钮 -->
+    <a href="game.html" class="back-button">返回游戏列表</a>
+
+    <!-- 游戏结束弹窗 -->
+    <div id="gameOverModal">
+      <h2>游戏结束！</h2>
+      <div id="rewardVideos"></div>
+      <div class="bottom-buttons">
+        <a href="javascript:;" class="aki-btn" onclick="restartGame()">
+          <span class="txt">重新开始</span>
+          <span class="icon">
+            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M729.6 448H128v85.333333h601.6L597.333333 665.6l59.733334 59.733333 234.666666-234.666666L661.333333 256l-59.733333 59.733333 128 132.266667z">
+              </path>
+            </svg>
+          </span>
+        </a>
+        <a href="javascript:;" class="aki-btn" onclick="window.location.href='game.html'">
+          <span class="txt">返回菜单</span>
+          <span class="icon">
+            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M729.6 448H128v85.333333h601.6L597.333333 665.6l59.733334 59.733333 234.666666-234.666666L661.333333 256l-59.733333 59.733333 128 132.266667z">
+              </path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+
+
+    <!-- 在 <body> 标签内，在 gameContainer div 之前添加以下代码 -->
+    <div id="gameRules" class="game-rules">
+      <div class="rules-header">游戏规则</div>
+      <div class="rules-content">
+        <p class="rules-intro">操控呆猫，接取更多的福，以换取更多的积分，从而解锁更多来自呆猫的福利小视频喵！！！</p>
+        <p class="rules-intro">本游戏总共十二个福利小视频，达到一百万积分即可全部解锁喵！！！</p>
+        <div class="rules-items">
+          <div class="rule-item">
+            <img src="images/fu1.png" alt="小福">
+            <span>小福：基础得分20分</span>
+          </div>
+          <div class="rule-item">
+            <img src="images/dafu.png" alt="大福">
+            <span>大福：基础得分50分，每获得一个大福增加200%积分获得率<span
+                style="color: #FF4D4D;">（注意：大福的2倍积分效果是呈指数倍叠加的！如果连续获得十个大福，那么积分倍率是1024倍！！！！！！）</span></span>
+          </div>
+          <div class="rule-item">
+            <img src="images/caochonggun1.png" alt="操虫棍">
+            <span>操虫棍：获得15秒二段跳能力</span>
+          </div>
+          <div class="rule-item">
+            <img src="images/shuangdao1.png" alt="双刀">
+            <span>双刀：获得12秒加速效果</span>
+          </div>
+          <div class="rule-item">
+            <img src="images/dajian1.png" alt="大剑">
+            <span>大剑：获得12秒变大效果</span>
+          </div>
+          <div class="rule-item">
+            <img src="images/zhongnu1.png" alt="重弩">
+            <span>重弩：获得10秒吸取道具效果</span>
+          </div>
+          <div class="rule-item">
+            <img src="images/taidao1.png" alt="太刀">
+            <span>太刀：获得12秒冲刺能力（双击方向键触发）</span>
+            <span style="color: #FF4D4D;">非常强力的冲刺！！！</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 在 music-player div 之前添加 -->
+    <div class="music-hint">
+      <span class="music-hint-text">这里有</span>
+      <span class="music-hint-text">好听的</span>
+      <span class="music-hint-text">音乐喵</span>
+    </div>
+
+    <!-- 原有的音乐播放器 -->
+    <div class="music-player">
+      <img src="images/cartoon-music-player.png" alt="Music Player" class="player-image" id="playPauseButton">
+      <p class="player-text">背景音乐</p>
+      <audio id="audioPlayer" loop preload="auto">
+        <source src="audio/jiefu.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+
+    <script>
+      // 游戏变量初始化
+      let playerPos = window.innerWidth * 3;
+      let playerPosY = 88;
+      const FLOOR_Y = 88;
+      const baseSpeed = 3.1;
+      let playerSpeed = baseSpeed;
+      const baseJumpForce = 1.6;  // 从2降低到1.6 (减少了1/5)
+      let jumpForce = 0;
+      const gravity = 0.05;
+      let doubleScore = false;
+      let dafuMultiplier = 1; // 初始倍率为1
+      let dafuCount = 0;      // 大福效果叠加次数
+      let dafuTimer = null;
+      let doubleJump = false;
+      let canDoubleJump = false;
+      const baseSize = 100;
+      let playerSize = baseSize;
+      let isDajianActive = false;
+      let canPressJumpAgain = true;  // 新增：用于追踪是否可以再次按跳跃键
+      let canJump = true;         // 是否可以跳跃
+      let hasDoubleJump = false;  // 是否有二段跳能力
+      let doubleJumpAvailable = false;  // 二段跳是否可用
+      let caochonggunTimer = null;
+      let taidaoTimer = null;
+      let dajianTimer = null;
+      let canDash = false;  // 是否可以冲刺
+      let isDashing = false;  // 是否正在冲刺
+      let lastKeyPressTime = 0;  // 上次按键时间
+      let lastKeyPressed = '';   // 上次按下的键
+      const DASH_COOLDOWN = 500;  // 冲刺冷却时间（毫秒）
+      const DASH_DURATION = 200;  // 冲刺持续时间（毫秒）
+      const DASH_SPEED = 15;     // 冲刺速度
+      let hasAttract = false;  // 是否有吸取效果
+      let zhongnuTimer = null;
+      const ATTRACT_SPEED = 15;      // 初始吸引速度
+      const ATTACH_SPEED = 25;       // 最终吸附速度
+      const SPEED_INCREMENT = 1.2;   // 速度增量系数
+      let startTime = Date.now();
+      let endTime = 0;
+
+      // 键盘状态
+      const keys = {
+        left: false,
+        right: false,
+        up: false
+      };
+
+      // 获取玩家元素
+      const player = document.getElementById('player');
+      const gameContainer = document.getElementById('gameContainer');
+      const scoreValue = document.getElementById('scoreValue');
+      let score = 0;
+
+      // 添加计时器变量
+      let timeLeft = 120;
+      let gameActive = true;
+      const timerValue = document.getElementById('timerValue');
+      const gameOverModal = document.getElementById('gameOverModal');
+
+      // 修改奖励阈值和视频路径
+      const rewardThresholds = [
+        { score: 0, video: 'videos/jiefu1.mp4' },
+        { score: 10, video: 'videos/jiefu2.mp4' },
+        { score: 100, video: 'videos/jiefu3.mp4' },
+        { score: 500, video: 'videos/jiefu4.mp4' },
+        { score: 1000, video: 'videos/jiefu5.mp4' },
+        { score: 5000, video: 'videos/jiefu6.mp4' },
+        { score: 10000, video: 'videos/jiefu7.mp4' },
+        { score: 20000, video: 'videos/jiefu8.mp4' },
+        { score: 50000, video: 'videos/jiefu9.mp4' },
+        { score: 100000, video: 'videos/jiefu10.mp4' },
+        { score: 500000, video: 'videos/jiefu11.mp4' },
+        { score: 1000000, video: 'videos/jiefu12.mp4' }
+      ];
+
+      // 添加调试按钮事件监听
+
+      // 添加一个新的动画帧ID变量
+      let animationFrameId = null;
+
+      // 添加一个变量保存上次的音量值
+      let lastVolume = 1;
+
+      // 修改 updatePosition 函数
+      function updatePosition() {
+        if (!gameActive) {
+          if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+          }
+          return;
+        }
+
+        // 移动逻辑
+        if (isDashing) {
+          // 冲刺时的移动
+          if (lastKeyPressed === 'ArrowLeft' || lastKeyPressed === 'a') {
+            playerPos -= DASH_SPEED;
+            player.style.background = 'url("images/daimaozuo.png") no-repeat center/contain';
+          } else if (lastKeyPressed === 'ArrowRight' || lastKeyPressed === 'd') {
+            playerPos += DASH_SPEED;
+            player.style.background = 'url("images/daimaoyou.png") no-repeat center/contain';
+          }
+        } else {
+          // 正常移动
+          if (keys.left && playerPos > 100) {
+            playerPos -= playerSpeed;
+            player.style.background = 'url("images/daimaozuo.png") no-repeat center/contain';
+          }
+          if (keys.right && playerPos < window.innerWidth * 6 - 100) {
+            playerPos += playerSpeed;
+            player.style.background = 'url("images/daimaoyou.png") no-repeat center/contain';
+          }
+        }
+
+        // 跳跃逻辑
+        if (keys.up) {
+          if (playerPosY === FLOOR_Y) {  // 在地面上时可以跳跃
+            jumpForce = baseJumpForce;
+            if (doubleJump) {
+              canDoubleJump = true;  // 获得虫棍后启用二段跳
+            }
+          } else if (doubleJump && canDoubleJump) {  // 在空中且有二段跳能力时
+            jumpForce = baseJumpForce;  // 二段跳和普通跳跃一样高
+            canDoubleJump = false;  // 用掉二段跳
+            console.log('执行二段跳！');  // 调试用
+          }
+        }
+
+        // 应用重力
+        if (playerPosY < FLOOR_Y || jumpForce !== 0) {
+          playerPosY -= jumpForce;
+          jumpForce -= gravity;
+        }
+
+        // 防止低于地板
+        if (playerPosY > FLOOR_Y) {
+          playerPosY = FLOOR_Y;
+          jumpForce = 0;
+        }
+
+        // 吸取效果
+        if (hasAttract) {
+          const playerRect = player.getBoundingClientRect();
+          const playerCenterX = playerRect.left + playerRect.width / 2;
+          const playerCenterY = playerRect.top + playerRect.height / 2;
+          const ATTRACT_RANGE = playerRect.height * 2;
+
+          document.querySelectorAll('.fu, .dafu, .caochonggun, .shuangdao, .dajian, .zhongnu, .taidao').forEach(item => {
+            if (!item.collected && !item.isAttaching) {
+              const itemRect = item.getBoundingClientRect();
+              const itemCenterX = itemRect.left + itemRect.width / 2;
+              const itemCenterY = itemRect.top + itemRect.height / 2;
+
+              const dx = playerCenterX - itemCenterX;
+              const dy = playerCenterY - itemCenterY;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+
+              if (distance < ATTRACT_RANGE) {
+                const left = parseFloat(item.style.left) || 0;
+                const top = parseFloat(item.style.top) || 0;
+
+                // 根据距离计算速度（越近越快）
+                const speedMultiplier = Math.pow(SPEED_INCREMENT,
+                  (ATTRACT_RANGE - distance) / 50);  // 距离越近，速度倍数越高
+                const currentSpeed = Math.min(ATTACH_SPEED,
+                  ATTRACT_SPEED * speedMultiplier);  // 限制最大速度
+
+                // 计算移动方向和曲线路径
+                const moveX = (dx / distance) * currentSpeed;
+                const moveY = (dy / distance) * currentSpeed;
+
+                // 添加轻微的曲线运动
+                const curve = Math.sin(Date.now() / 200) * 2;  // 轻微的正弦波动
+                const curveX = moveX + curve;
+                const curveY = moveY + curve;
+
+                // 更新位置
+                item.style.left = (left + curveX) + 'px';
+                item.style.top = (top + curveY) + 'px';
+                item.style.transition = 'all 0.1s ease-out';  // 更快的过渡
+                item.style.zIndex = '1001';
+
+                // 当非常接近时，直接吸附并触发收集效果
+                if (distance < 30) {
+                  item.isAttaching = true;
+
+                  // 快速吸附动画
+                  item.style.position = 'fixed';
+                  item.style.left = `${playerCenterX - itemRect.width / 2}px`;
+                  item.style.top = `${playerCenterY - itemRect.height / 2}px`;
+                  item.style.transition = 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
+                  item.style.transform = 'scale(0.6)';
+                  item.style.opacity = '0.8';
+
+                  // 更短的消失时间
+                  setTimeout(() => {
+                    item.style.transform = 'scale(0)';
+                    item.style.opacity = '0';
+                    setTimeout(() => {
+                      item.collected = true;
+                      item.style.display = 'none';
+                      // 根据道具类型应用效果
+                      if (item.className === 'fu') {
+                        score += 20 * (doubleScore ? dafuMultiplier : 1);
+                      } else if (item.className === 'dafu') {
+                        score += 50;
+                        dafuCount++; // 增加大福计数，不设上限
+                        dafuMultiplier = Math.pow(2, dafuCount); // 2的n次方作为倍率，可以无限增长
+                        doubleScore = true;
+
+                        // 更新状态显示，改用倍数表示
+                        const dafuStatus = document.getElementById('dafuStatus');
+                        const tooltip = dafuStatus.querySelector('.tooltip');
+                        tooltip.textContent = `${dafuMultiplier}倍加成：剩余18秒`;
+
+                        // 清除旧的计时器
+                        if (dafuTimer) clearTimeout(dafuTimer);
+
+                        // 设置新的计时器
+                        updateStatus('dafuStatus', 18);
+                        dafuTimer = setTimeout(() => {
+                          doubleScore = false;
+                          dafuCount = 0;     // 重置大福计数
+                          dafuMultiplier = 1; // 重置倍率
+                          document.getElementById('dafuStatus').classList.remove('active');
+                          dafuStatus.querySelector('.tooltip').textContent = '双倍得分：未激活';
+                        }, 18000);
+                      } else if (item.className === 'caochonggun') {
+                        doubleJump = true;
+                        hasDoubleJump = true;
+                        if (caochonggunTimer) clearTimeout(caochonggunTimer);
+                        updateStatus('caochonggunStatus', 15);  // 15秒
+                        caochonggunTimer = setTimeout(() => {
+                          doubleJump = false;
+                          hasDoubleJump = false;
+                          doubleJumpAvailable = false;
+                          document.getElementById('caochonggunStatus').classList.remove('active');
+                        }, 15000);
+                      } else if (item.className === 'shuangdao') {
+                        playerSpeed = baseSpeed * 1.5;
+                        if (taidaoTimer) clearTimeout(taidaoTimer);
+                        updateStatus('shuangdaoStatus', 12);  // 12秒
+                        taidaoTimer = setTimeout(() => {
+                          playerSpeed = baseSpeed;
+                          document.getElementById('shuangdaoStatus').classList.remove('active');
+                        }, 12000);
+                      } else if (item.className === 'dajian') {
+                        playerSize = baseSize * 1.5;
+                        player.style.width = `${playerSize}px`;
+                        player.style.height = `${playerSize}px`;
+                        if (dajianTimer) clearTimeout(dajianTimer);
+                        updateStatus('dajianStatus', 12);  // 12秒
+                        dajianTimer = setTimeout(() => {
+                          playerSize = baseSize;
+                          player.style.width = `${baseSize}px`;
+                          player.style.height = `${baseSize}px`;
+                          document.getElementById('dajianStatus').classList.remove('active');
+                        }, 12000);
+                      } else if (item.className === 'zhongnu') {
+                        hasAttract = true;
+                        if (zhongnuTimer) clearTimeout(zhongnuTimer);
+                        updateStatus('zhongnuStatus', 10);  // 10秒
+                        zhongnuTimer = setTimeout(() => {
+                          hasAttract = false;
+                          document.getElementById('zhongnuStatus').classList.remove('active');
+                        }, 10000);
+                      } else if (item.className === 'taidao') {
+                        canDash = true;
+                        if (taidaoTimer) clearTimeout(taidaoTimer);
+                        updateStatus('taidaoStatus', 12);  // 12秒
+                        taidaoTimer = setTimeout(() => {
+                          canDash = false;
+                          document.getElementById('taidaoStatus').classList.remove('active');
+                        }, 12000);
+                      }
+
+                      scoreValue.textContent = score;
+                    }, 150);
+                  }, 100);
+                }
+              }
+            }
+          });
+        }
+
+        // 检测碰撞
+        document.querySelectorAll('.fu, .dafu, .caochonggun, .shuangdao, .dajian, .zhongnu, .taidao').forEach(item => {
+          if (!item.collected && isColliding(player, item)) {
+            item.collected = true;
+            item.style.display = 'none';
+
+            // 根据道具类型应用效果
+            if (item.className === 'fu') {
+              score += 20 * (doubleScore ? dafuMultiplier : 1);
+            } else if (item.className === 'dafu') {
+              score += 50;
+              dafuCount++; // 增加大福计数，不设上限
+              dafuMultiplier = Math.pow(2, dafuCount); // 2的n次方作为倍率
+              doubleScore = true;
+
+              // 更新状态显示，改用倍数表示
+              const dafuStatus = document.getElementById('dafuStatus');
+              const tooltip = dafuStatus.querySelector('.tooltip');
+              tooltip.textContent = `${dafuMultiplier}倍加成：剩余18秒`;
+
+              // 清除旧的计时器
+              if (dafuTimer) clearTimeout(dafuTimer);
+
+              // 设置新的计时器
+              updateStatus('dafuStatus', 18);
+              dafuTimer = setTimeout(() => {
+                doubleScore = false;
+                dafuCount = 0;     // 重置大福计数
+                dafuMultiplier = 1; // 重置倍率
+                document.getElementById('dafuStatus').classList.remove('active');
+                dafuStatus.querySelector('.tooltip').textContent = '双倍得分：未激活';
+              }, 18000);
+            } else if (item.className === 'caochonggun') {
+              doubleJump = true;
+              hasDoubleJump = true;
+              if (caochonggunTimer) clearTimeout(caochonggunTimer);
+              updateStatus('caochonggunStatus', 15);  // 15秒
+              caochonggunTimer = setTimeout(() => {
+                doubleJump = false;
+                hasDoubleJump = false;
+                doubleJumpAvailable = false;
+                document.getElementById('caochonggunStatus').classList.remove('active');
+              }, 15000);
+            } else if (item.className === 'shuangdao') {
+              playerSpeed = baseSpeed * 1.5;
+              if (taidaoTimer) clearTimeout(taidaoTimer);
+              updateStatus('shuangdaoStatus', 12);  // 12秒
+              taidaoTimer = setTimeout(() => {
+                playerSpeed = baseSpeed;
+                document.getElementById('shuangdaoStatus').classList.remove('active');
+              }, 12000);
+            } else if (item.className === 'dajian') {
+              playerSize = baseSize * 1.5;
+              player.style.width = `${playerSize}px`;
+              player.style.height = `${playerSize}px`;
+              if (dajianTimer) clearTimeout(dajianTimer);
+              updateStatus('dajianStatus', 12);  // 12秒
+              dajianTimer = setTimeout(() => {
+                playerSize = baseSize;
+                player.style.width = `${baseSize}px`;
+                player.style.height = `${baseSize}px`;
+                document.getElementById('dajianStatus').classList.remove('active');
+              }, 12000);
+            } else if (item.className === 'zhongnu') {
+              hasAttract = true;
+              if (zhongnuTimer) clearTimeout(zhongnuTimer);
+              updateStatus('zhongnuStatus', 10);  // 10秒
+              zhongnuTimer = setTimeout(() => {
+                hasAttract = false;
+                document.getElementById('zhongnuStatus').classList.remove('active');
+              }, 10000);
+            } else if (item.className === 'taidao') {
+              canDash = true;
+              if (taidaoTimer) clearTimeout(taidaoTimer);
+              updateStatus('taidaoStatus', 12);  // 12秒
+              taidaoTimer = setTimeout(() => {
+                canDash = false;
+                document.getElementById('taidaoStatus').classList.remove('active');
+              }, 12000);
+            }
+
+            scoreValue.textContent = score;
+          }
+        });
+
+        // 更新玩家位置
+        player.style.left = `${playerPos}px`;
+        player.style.top = `${playerPosY}vh`;  // 始终使用playerPosY，移除isDajianActive的判断
+
+        // 添加视角跟随
+        window.scrollTo({
+          left: playerPos - window.innerWidth / 2,
+          behavior: 'instant'
+        });
+
+        // 存储动画帧ID
+        animationFrameId = requestAnimationFrame(updatePosition);
+      }
+
+      // 键盘事件监听
+      window.addEventListener('keydown', function (e) {
+        const currentTime = Date.now();
+
+        switch (e.key) {
+          case 'ArrowLeft':
+          case 'a':
+            if (!keys.left) { // 只在第一次按下时检查双击
+              // 检查双击
+              if (canDash && !isDashing &&
+                (e.key === lastKeyPressed) &&
+                (currentTime - lastKeyPressTime < 300)) {  // 300ms内的双击判定
+                // 触发向左冲刺
+                isDashing = true;
+                setTimeout(() => {
+                  isDashing = false;
+                }, DASH_DURATION);
+              }
+              lastKeyPressed = e.key;
+              lastKeyPressTime = currentTime;
+            }
+            keys.left = true;
+            break;
+          case 'ArrowRight':
+          case 'd':
+            if (!keys.right) { // 只在第一次按下时检查双击
+              // 检查双击
+              if (canDash && !isDashing &&
+                (e.key === lastKeyPressed) &&
+                (currentTime - lastKeyPressTime < 300)) {  // 300ms内的双击判定
+                // 触发向右冲刺
+                isDashing = true;
+                setTimeout(() => {
+                  isDashing = false;
+                }, DASH_DURATION);
+              }
+              lastKeyPressed = e.key;
+              lastKeyPressTime = currentTime;
+            }
+            keys.right = true;
+            break;
+          case 'ArrowUp':
+          case 'w':
+          case ' ':
+            // 如果在地面上
+            if (playerPosY === FLOOR_Y && !keys.up) {
+              jumpForce = baseJumpForce;
+              doubleJumpAvailable = hasDoubleJump;  // 跳跃时重置二段跳可用性
+            }
+            // 如果在空中且可以二段跳
+            else if (playerPosY < FLOOR_Y && doubleJumpAvailable && !keys.up) {
+              jumpForce = baseJumpForce;
+              doubleJumpAvailable = false;  // 使用掉二段跳
+              console.log('二段跳！');
+            }
+            keys.up = true;
+            break;
+        }
+      });
+
+      window.addEventListener('keyup', function (e) {
+        switch (e.key) {
+          case 'ArrowLeft':
+          case 'a':
+            keys.left = false;
+            break;
+          case 'ArrowRight':
+          case 'd':
+            keys.right = false;
+            break;
+          case 'ArrowUp':
+          case 'w':
+          case ' ':
+            keys.up = false;
+            canPressJumpAgain = true;  // 松开跳跃键后才能再次跳跃
+            break;
+        }
+      });
+
+      // 碰撞检测函数
+      function isColliding(player, item) {
+        const playerRect = player.getBoundingClientRect();
+        const itemRect = item.getBoundingClientRect();
+
+        return !(playerRect.right < itemRect.left ||
+          playerRect.left > itemRect.right ||
+          playerRect.bottom < itemRect.top ||
+          playerRect.top > itemRect.bottom);
+      }
+
+      // 修改生成道具的函数
+      function generateItem() {
+        const item = document.createElement('div');
+        const random = Math.random();
+
+        // 调整概率分配
+        if (random < 0.4) {  // 40% 概率生成普通福字
+          item.className = 'fu';
+        } else if (random < 0.5) {  // 10% 概率生成大福
+          item.className = 'dafu';
+        } else if (random < 0.6) {  // 10% 概率生成草虫棍
+          item.className = 'caochonggun';
+        } else if (random < 0.7) {  // 10% 概率生成双刀
+          item.className = 'shuangdao';
+        } else if (random < 0.8) {  // 10% 概率生成大剑
+          item.className = 'dajian';
+        } else if (random < 0.9) {  // 10% 概率生成重弩
+          item.className = 'zhongnu';
+        } else {  // 10% 概率生成太刀
+          item.className = 'taidao';
+        }
+
+        item.style.left = Math.random() * (window.innerWidth * 6) + 'px';
+        gameContainer.appendChild(item);
+
+        setTimeout(() => {
+          if (item.parentNode === gameContainer) {
+            gameContainer.removeChild(item);
+          }
+        }, 4000);
+      }
+
+      // 修改开始生成道具函数，保存interval ID
+      let itemGenerationInterval;
+      function startItemGeneration() {
+        itemGenerationInterval = setInterval(generateItem, 200);  // 从1000改为200，实现每秒生成5个道具
+      }
+
+      // 在初始化游戏时启动计时器
+      document.addEventListener('DOMContentLoaded', function () {
+        player.style.left = `${playerPos}px`;
+        player.style.top = `${playerPosY}vh`;
+        gameActive = true;
+        animationFrameId = requestAnimationFrame(updatePosition);
+        startItemGeneration();
+        updateTimer(); // 启动计时器
+
+        // 添加结束按钮事件监听
+        document.getElementById('endGameButton').addEventListener('click', function () {
+          console.log('End game button clicked'); // 调试用
+          endGame();
+        });
+      });
+
+      // 修改状态更新函数
+      function updateStatus(statusId, duration) {
+        const statusElement = document.getElementById(statusId);
+        statusElement.classList.add('active');
+
+        const tooltipElement = statusElement.querySelector('.tooltip');
+        const effectName = {
+          'dafuStatus': `${dafuMultiplier}倍加成`,  // 修改为倍数显示
+          'caochonggunStatus': '二段跳',
+          'shuangdaoStatus': '加速',
+          'dajianStatus': '变大',
+          'zhongnuStatus': '吸取道具',
+          'taidaoStatus': '冲刺'
+        }[statusId];
+
+        function updateTooltip() {
+          const timeLeft = Math.ceil((endTime - Date.now()) / 1000);
+          if (timeLeft > 0) {
+            tooltipElement.textContent = `${effectName}：剩余 ${timeLeft} 秒`;
+            requestAnimationFrame(updateTooltip);
+          } else {
+            tooltipElement.textContent = `${effectName}：未激活`;
+          }
+        }
+
+        const endTime = Date.now() + duration * 1000;
+        updateTooltip();
+      }
+
+      // 更新计时器函数
+      function updateTimer() {
+        if (!gameActive) return;
+
+        timeLeft--;
+        timerValue.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          endGame();
+        } else {
+          setTimeout(updateTimer, 1000);
+        }
+      }
+
+      // 修改游戏结束函数
+      function endGame() {
+        console.log('Ending game...'); // 调试用
+
+        // 停止游戏
+        gameActive = false;
+
+        // 停止音乐播放并隐藏播放器和箭头提示
+        const audioPlayer = document.getElementById('audioPlayer');
+        const musicPlayer = document.querySelector('.music-player');
+        const playerImage = document.querySelector('.player-image');
+        const musicHint = document.querySelector('.music-hint'); // 添加这行
+
+        audioPlayer.pause();
+        playerImage.classList.remove('playing');
+        musicPlayer.style.display = 'none';
+        musicHint.style.display = 'none'; // 添加这行
+
+        // 清除所有计时器
+        clearInterval(itemGenerationInterval);
+        if (dafuTimer) clearTimeout(dafuTimer);
+        if (caochonggunTimer) clearTimeout(caochonggunTimer);
+        if (taidaoTimer) clearTimeout(taidaoTimer);
+        if (dajianTimer) clearTimeout(dajianTimer);
+        if (zhongnuTimer) clearTimeout(zhongnuTimer);
+
+        // 隐藏UI元素
+        document.getElementById('scoreBox').style.display = 'none';
+        document.getElementById('timerBox').style.display = 'none';
+        document.getElementById('statusBar').style.display = 'none';
+        document.getElementById('endGameButton').style.display = 'none';
+
+        // 显示游戏结束弹窗
+        const gameOverModal = document.getElementById('gameOverModal');
+        gameOverModal.style.display = 'flex';
+
+        // 生成奖励视频按钮
+        const rewardVideosDiv = document.getElementById('rewardVideos');
+        rewardVideosDiv.innerHTML = ''; // 清空现有内容
+
+        // 根据分数显示可用的视频
+        rewardThresholds.forEach((threshold, index) => {
+          if (score >= threshold.score) {
+            const button = document.createElement('a');
+            button.href = 'javascript:;';
+            button.className = 'aki-btn';
+            button.innerHTML = `
+              <span class="txt">奖励视频 ${index + 1}</span>
+              <span class="icon">
+                <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M729.6 448H128v85.333333h601.6L597.333333 665.6l59.733334 59.733333 234.666666-234.666666L661.333333 256l-59.733333 59.733333 128 132.266667z"></path>
+                </svg>
+              </span>
+            `;
+            button.onclick = () => playVideo(threshold.video);
+
+            const progressText = document.createElement('div');
+            progressText.className = 'progress-text';
+            progressText.textContent = `达成分数：${threshold.score}`;
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.appendChild(button);
+            buttonContainer.appendChild(progressText);
+
+            rewardVideosDiv.appendChild(buttonContainer);
+          }
+        });
+      }
+
+      // 添加视频播放器控制代码
+      document.addEventListener('DOMContentLoaded', function () {
+        const videoContainer = document.getElementById('rewardVideoContainer');
+        const video = document.getElementById('rewardVideo');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressContainer = document.querySelector('.progress-container');
+        const progressBar = document.querySelector('.progress-bar');
+        const currentTimeSpan = document.getElementById('currentTime');
+        const durationSpan = document.getElementById('duration');
+        const volumeBtn = document.getElementById('volumeBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const speedControl = document.querySelector('.speed-control');
+        const speedMenu = document.querySelector('.speed-menu');
+        const currentSpeed = document.getElementById('currentSpeed');
+        const loopBtn = document.getElementById('loopBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const closeVideo = document.getElementById('closeVideo');
+
+        let isDragging = false;
+
+        // 播放/暂停控制
+        playPauseBtn.addEventListener('click', togglePlay);
+
+        function togglePlay() {
+          if (video.paused) {
+            video.play().then(() => {
+              playPauseBtn.textContent = '⏸';
+              playPauseBtn.setAttribute('data-status', '暂停');
+            });
+          } else {
+            video.pause();
+            playPauseBtn.textContent = '▶';
+            playPauseBtn.setAttribute('data-status', '播放');
+          }
+        }
+
+        // 格式化时间显示函数
+        function formatTime(seconds) {
+          if (isNaN(seconds)) return "0:00";  // 处理 NaN 情况
+          const minutes = Math.floor(seconds / 60);
+          seconds = Math.floor(seconds % 60);
+          return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // 修改视频时间更新处理函数
+        video.ontimeupdate = () => {
+          if (!isDragging) {
+            // 使用 requestAnimationFrame 实现更平滑的更新
+            requestAnimationFrame(() => {
+              const progress = (video.currentTime / video.duration) * 100;
+
+              // 更新进度条
+              progressBar.style.width = `${progress}%`;
+
+              // 更新呆猫位置
+              const daimao = document.querySelector('.progress-daimao');
+              daimao.style.left = `${progress}%`;
+
+              // 更新时间显示
+              currentTimeSpan.textContent = formatTime(video.currentTime);
+              durationSpan.textContent = formatTime(video.duration);
+            });
+          }
+        };
+
+        // 优化进度条拖动更新逻辑
+        function updateProgress(e) {
+          const rect = progressContainer.getBoundingClientRect();
+          const clickPosition = e.clientX - rect.left;
+          const totalWidth = rect.width;
+          const progress = Math.max(0, Math.min(clickPosition / totalWidth, 1));
+          const progressPercent = progress * 100;
+
+          // 使用 requestAnimationFrame 实现更平滑的更新
+          requestAnimationFrame(() => {
+            // 更新视频时间
+            video.currentTime = progress * video.duration;
+
+            // 更新进度条
+            progressBar.style.width = `${progressPercent}%`;
+
+            // 更新呆猫位置
+            const daimao = document.querySelector('.progress-daimao');
+            daimao.style.left = `${progressPercent}%`;
+          });
+        }
+
+        // 优化拖动事件处理
+        let lastDragTime = 0;
+        const DRAG_THROTTLE = 16.67; // 约60fps
+
+        progressContainer.addEventListener('mousemove', (e) => {
+          if (isDragging) {
+            const currentTime = Date.now();
+            // 添加节流，避免过于频繁的更新
+            if (currentTime - lastDragTime >= DRAG_THROTTLE) {
+              updateProgress(e);
+              lastDragTime = currentTime;
+            }
+          }
+        });
+
+        // 添加拖动事件监听
+        progressContainer.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          updateProgress(e);
+        });
+
+        document.addEventListener('mouseup', () => {
+          isDragging = false;
+        });
+
+        // 倍速控制
+        currentSpeed.addEventListener('click', (e) => {
+          e.stopPropagation();
+          speedMenu.style.display = speedMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.querySelectorAll('.speed-option').forEach(option => {
+          option.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const speed = parseFloat(this.dataset.speed);
+            video.playbackRate = speed;
+            currentSpeed.textContent = speed + 'x';
+            speedMenu.style.display = 'none';
+          });
+        });
+
+        // 点击其他地方时隐藏速度菜单
+        document.addEventListener('click', () => {
+          speedMenu.style.display = 'none';
+        });
+
+        // 循环播放控制
+        let isLooping = false;
+        loopBtn.addEventListener('click', () => {
+          isLooping = !isLooping;
+          video.loop = isLooping;
+          loopBtn.style.color = isLooping ? '#00BFFF' : '#666666';
+          loopBtn.style.opacity = isLooping ? '1' : '0.6';
+          loopBtn.setAttribute('data-tooltip', `循环播放：${isLooping ? '开启' : '关闭'}`);
+        });
+
+        // 保存视频功能
+        saveBtn.addEventListener('click', () => {
+          const videoUrl = video.querySelector('source').src;
+          const a = document.createElement('a');
+          a.href = videoUrl;
+          a.download = videoUrl.split('/').pop();
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        });
+
+        // 关闭视频
+        closeVideo.addEventListener('click', () => {
+          video.pause();
+          videoContainer.style.display = 'none';
+
+          // 如果回到游戏页面才显示UI
+          if (gameActive) {
+            document.getElementById('scoreBox').style.display = '';
+            document.getElementById('timerBox').style.display = '';
+            document.getElementById('statusBar').style.display = '';
+            document.getElementById('endGameButton').style.display = '';
+          }
+        });
+
+        // 视频加载完成后显示总时长
+        video.onloadedmetadata = () => {
+          durationSpan.textContent = formatTime(video.duration);
+
+          // 初始化播放速度
+          video.playbackRate = 1.0;
+          currentSpeed.textContent = '1.0x';
+
+          // 修改：默认开启循环播放
+          video.loop = true;
+          isLooping = true;
+          loopBtn.style.color = '#00BFFF';
+          loopBtn.setAttribute('data-tooltip', '循环播放：开启');
+
+          // 初始化音量
+          video.volume = volumeSlider.value;
+          volumeBtn.dataset.tooltip = `音量：${Math.round(volumeSlider.value * 100)}%`;
+        };
+
+        // 点击视频切换播放/暂停
+        video.addEventListener('click', togglePlay);
+
+        // 防止点击控制栏时触发视频播放/暂停
+        document.querySelector('.custom-controls').addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      });
+
+      // 修改重新开始游戏的函数
+      function restartGame() {
+        // 隐藏游戏结束弹窗
+        const gameOverModal = document.getElementById('gameOverModal');
+        gameOverModal.style.display = 'none';
+
+        // 重新显示UI元素
+        document.getElementById('scoreBox').style.display = '';
+        document.getElementById('timerBox').style.display = '';
+        document.getElementById('statusBar').style.display = '';
+        document.getElementById('endGameButton').style.display = '';
+
+        // 确保取消之前的动画循环
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+
+        // 重置游戏状态
+        gameActive = true;
+
+        // 重置键盘状态
+        keys.left = false;
+        keys.right = false;
+        keys.up = false;
+
+        // 重置分数
+        score = 0;
+        scoreValue.textContent = score;
+
+        // 重置计时器
+        timeLeft = 120;
+        timerValue.textContent = timeLeft;
+
+        // 重置玩家位置和状态
+        playerPos = window.innerWidth * 3;
+        playerPosY = 88;
+        playerSize = baseSize;
+        jumpForce = 0;
+        player.style.width = `${baseSize}px`;
+        player.style.height = `${baseSize}px`;
+        player.style.left = `${playerPos}px`;
+        player.style.top = `${playerPosY}vh`;
+
+        // 重置所有增益状态
+        doubleScore = false;
+        dafuCount = 0;
+        dafuMultiplier = 1;
+        doubleJump = false;
+        hasDoubleJump = false;
+        canDoubleJump = false;
+        playerSpeed = baseSpeed;
+        hasAttract = false;
+        canDash = false;
+        isDashing = false;
+
+        // 清除所有计时器
+        if (dafuTimer) clearTimeout(dafuTimer);
+        if (caochonggunTimer) clearTimeout(caochonggunTimer);
+        if (taidaoTimer) clearTimeout(taidaoTimer);
+        if (dajianTimer) clearTimeout(dajianTimer);
+        if (zhongnuTimer) clearTimeout(zhongnuTimer);
+
+        // 重置所有状态图标
+        document.querySelectorAll('.status-icon').forEach(status => {
+          status.classList.remove('active');
+          const tooltip = status.querySelector('.tooltip');
+          const effectName = tooltip.textContent.split('：')[0];
+          tooltip.textContent = `${effectName}：未激活`;
+        });
+
+        // 清除所有现有道具
+        document.querySelectorAll('.fu, .dafu, .caochonggun, .shuangdao, .dajian, .zhongnu, .taidao').forEach(item => {
+          if (item.parentNode === gameContainer) {
+            gameContainer.removeChild(item);
+          }
+        });
+
+        // 重新开始生成道具
+        if (itemGenerationInterval) clearInterval(itemGenerationInterval);
+        startItemGeneration();
+
+        // 重新启动游戏循环
+        animationFrameId = requestAnimationFrame(updatePosition);
+
+        // 重新开始计时器
+        updateTimer();
+
+        // 重新显示并播放音乐
+        const audioPlayer = document.getElementById('audioPlayer');
+        const musicPlayer = document.querySelector('.music-player');
+        const playerImage = document.querySelector('.player-image');
+        const musicHint = document.querySelector('.music-hint'); // 添加这行
+
+        musicPlayer.style.display = '';
+        musicHint.style.display = ''; // 添加这行
+        audioPlayer.play().then(() => {
+          playerImage.classList.add('playing');
+          playerImage.style.setProperty('--rotation', '0deg');
+        });
+      }
+
+      // 在其他JavaScript代码之前添加视频播放函数
+      function playVideo(videoUrl) {
+        const videoContainer = document.getElementById('rewardVideoContainer');
+        const video = document.getElementById('rewardVideo');
+        const source = video.querySelector('source');
+        const volumeBtn = document.getElementById('volumeBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        let lastVolume = 1;
+
+        // 设置视频源
+        source.src = videoUrl;
+        video.load();
+
+        // 显示视频容器
+        videoContainer.style.display = 'block';
+
+        // 隐藏游戏UI
+        document.getElementById('scoreBox').style.display = 'none';
+        document.getElementById('timerBox').style.display = 'none';
+        document.getElementById('statusBar').style.display = 'none';
+        document.getElementById('endGameButton').style.display = 'none';
+
+        // 初始化音量控制
+        video.volume = volumeSlider.value;
+        volumeBtn.setAttribute('data-tooltip', `音量：${Math.round(volumeSlider.value * 100)}%`);
+
+        // 音量按钮点击事件
+        volumeBtn.onclick = () => {
+          if (video.volume > 0) {
+            lastVolume = video.volume;
+            video.volume = 0;
+            volumeSlider.value = 0;
+            volumeBtn.textContent = '🔇';
+            volumeBtn.setAttribute('data-tooltip', '音量：0%');
+          } else {
+            video.volume = lastVolume;
+            volumeSlider.value = lastVolume;
+            volumeBtn.textContent = '🔊';
+            volumeBtn.setAttribute('data-tooltip', `音量：${Math.round(lastVolume * 100)}%`);
+          }
+        };
+
+        // 音量滑块事件
+        volumeSlider.oninput = () => {
+          const volume = parseFloat(volumeSlider.value);
+          video.volume = volume;
+          volumeBtn.textContent = volume > 0 ? '🔊' : '🔇';
+          volumeBtn.setAttribute('data-tooltip', `音量：${Math.round(volume * 100)}%`);
+          if (volume > 0) {
+            lastVolume = volume;
+          }
+        };
+
+        // 播放视频
+        video.play().then(() => {
+          document.getElementById('playPauseBtn').textContent = '⏸';
+          document.getElementById('playPauseBtn').setAttribute('data-status', '暂停');
+        }).catch(error => {
+          console.error('视频播放失败:', error);
+        });
+      }
+
+      // 添加动态更新 tooltip 的函数
+      function updateTooltips() {
+        // 更新播放/暂停按钮的提示
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        playPauseBtn.dataset.tooltip = `当前状态：${playPauseBtn.dataset.status}`;
+
+        // 更新音量按钮的提示
+        const volumeBtn = document.getElementById('volumeBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        volumeBtn.dataset.tooltip = `音量：${Math.round(volumeSlider.value * 100)}%`;
+
+        // 更新速度按钮的提示
+        const speedBtn = document.getElementById('currentSpeed');
+        speedBtn.dataset.tooltip = `当前速度：${video.playbackRate}x`;
+
+        // 更新循环播放按钮的提示
+        const loopStatus = video.loop ? '开启' : '关闭';
+        loopBtn.dataset.tooltip = `循环播放：${loopStatus}`;
+      }
+
+      // 在相关事件处理器中调用 updateTooltips
+      document.getElementById('volumeSlider').addEventListener('input', updateTooltips);
+      document.getElementById('playPauseBtn').addEventListener('click', updateTooltips);
+      document.getElementById('currentSpeed').addEventListener('click', updateTooltips);
+      document.getElementById('loopBtn').addEventListener('click', updateTooltips);
+
+      // 初始化 tooltips
+      updateTooltips();
+
+      // 获取当前旋转角度的函数
+      function getComputedRotation(element) {
+        const style = window.getComputedStyle(element);
+        const transform = style.transform;
+
+        if (transform === 'none') {
+          return 0;
+        }
+
+        const values = transform.split('(')[1].split(')')[0].split(',');
+        const a = values[0];
+        const b = values[1];
+        let angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+
+        if (angle < 0) {
+          angle += 360;
+        }
+
+        return angle;
+      }
+
+      // 设置音频控制
+      function setupAudioControl(audio, button) {
+        // 初始化旋转角度
+        button.style.setProperty('--rotation', '0deg');
+
+        button.addEventListener('click', function () {
+          if (audio.paused) {
+            audio.play().then(() => {
+              const currentRotation = getComputedRotation(button);
+              button.style.setProperty('--rotation', `${currentRotation}deg`);
+              button.classList.add('playing');
+            }).catch(error => {
+              console.error('播放失败:', error);
+            });
+          } else {
+            audio.pause();
+            button.classList.remove('playing');
+            const currentRotation = getComputedRotation(button);
+            button.style.setProperty('--rotation', `${currentRotation}deg`);
+          }
+        });
+
+        audio.addEventListener('ended', function () {
+          if (!audio.loop) {
+            button.classList.remove('playing');
+            const currentRotation = getComputedRotation(button);
+            button.style.setProperty('--rotation', `${currentRotation}deg`);
+          }
+        });
+      }
+
+      // 页面加载完成后初始化音频控制
+      document.addEventListener('DOMContentLoaded', function () {
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseButton = document.getElementById('playPauseButton');
+
+        if (audioPlayer && playPauseButton) {
+          setupAudioControl(audioPlayer, playPauseButton);
+          // 自动播放音乐
+          audioPlayer.play().then(() => {
+            playPauseButton.classList.add('playing');
+          }).catch(error => {
+            console.error('自动播放失败:', error);
+          });
+        }
+      });
+    </script>
+
+    <!-- 在 </body> 标签之前，在其他脚本之后添加这个新的 script 标签 -->
+    <script>
+      // 音乐播放器控制
+      document.addEventListener('DOMContentLoaded', function () {
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseButton = document.getElementById('playPauseButton');
+
+        function getComputedRotation(element) {
+          const style = window.getComputedStyle(element);
+          const transform = style.transform;
+
+          if (transform === 'none') {
+            return 0;
+          }
+
+          const values = transform.split('(')[1].split(')')[0].split(',');
+          const a = values[0];
+          const b = values[1];
+          let angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+
+          if (angle < 0) {
+            angle += 360;
+          }
+
+          return angle;
+        }
+
+        if (audioPlayer && playPauseButton) {
+          // 初始化旋转角度
+          playPauseButton.style.setProperty('--rotation', '0deg');
+
+          playPauseButton.addEventListener('click', function () {
+            console.log('Button clicked'); // 调试日志
+            if (audioPlayer.paused) {
+              audioPlayer.play().then(() => {
+                const currentRotation = getComputedRotation(playPauseButton);
+                playPauseButton.style.setProperty('--rotation', `${currentRotation}deg`);
+                playPauseButton.classList.add('playing');
+                console.log('Audio started playing'); // 调试日志
+              }).catch(error => {
+                console.error('播放失败:', error);
+              });
+            } else {
+              audioPlayer.pause();
+              playPauseButton.classList.remove('playing');
+              const currentRotation = getComputedRotation(playPauseButton);
+              playPauseButton.style.setProperty('--rotation', `${currentRotation}deg`);
+              console.log('Audio paused'); // 调试日志
+            }
+          });
+
+          // 自动播放音乐
+          audioPlayer.play().then(() => {
+            playPauseButton.classList.add('playing');
+            console.log('Auto-play started'); // 调试日志
+          }).catch(error => {
+            console.error('自动播放失败:', error);
+          });
+        }
+      });
+    </script>
+</body>
+
+</html>

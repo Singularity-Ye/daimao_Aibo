@@ -1,0 +1,40 @@
+#rotating-image {
+  position: fixed;
+  width: 75px;
+  height: 75px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.control-panel {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  padding: 10px 20px;
+  background: rgba(3, 233, 244, 0.1);
+  border: 1px solid #03e9f4;
+  color: #03e9f4;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: 'KoseFont', Arial, sans-serif;
+  /* 修改字体 */
+}
+
+.control-panel:hover {
+  background: rgba(3, 233, 244, 0.2);
+}
+
+#status-bar {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: rgba(64, 68, 75, 0.8);
+  color: #ffffff;
+  border-radius: 5px;
+  z-index: 1000;
+  font-family: 'KoseFont', Arial, sans-serif;
+  /* 修改字体 */
+}

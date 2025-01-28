@@ -1,0 +1,3117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>呆猫祝老大们新春快乐喵</title>
+  <link rel="stylesheet" href="css/particle.css">
+  <link rel="stylesheet" href="css/rotating.css">
+  <link rel="stylesheet" href="css/scroll.css">
+  <link rel="preload" href="audio/zhufu.mp3" as="audio">
+  <link rel="preload" href="audio/rixi.mp3" as="audio">
+  <link rel="preload" href="audio/hange.mp3" as="audio">
+  <link rel="preload" href="audio/qinghuaci.mp3" as="audio">
+  <link rel="preload" href="audio/DJ.mp3" as="audio">
+  <link rel="preload" href="audio/jiefu.mp3" as="audio">
+  <link rel="preload" href="audio/dianyin.mp3" as="audio">
+  <link rel="preload" href="audio/chunjie.mp3" as="audio">
+  <link rel="preload" href="audio/hajimi.mp3" as="audio">
+  <link rel="preload" href="audio/shengdan.mp3" as="audio">
+  <link rel="preload" href="audio/haha.mp3" as="audio">
+  <link rel="preload" href="audio/beiliya.mp3" as="audio">
+  <link rel="preload" href="images/daimao1.png" as="image">
+  <link rel="preload" href="images/daimao2.png" as="image">
+  <link rel="preload" href="images/daimao4.png" as="image">
+  <style>
+    /* 烟花动画部分的样式 */
+    #fireworkSection {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      background: #000;
+      transition: opacity 1s ease-out;
+    }
+
+    #fireworkSection.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 右上角内容容器 - 添加到烟花部分 */
+    .corner-content {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001;
+      opacity: 1;
+      transition: opacity 1s ease-out;
+    }
+
+    /* 音频播放器样式 */
+    .music-player {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      text-align: center;
+      z-index: 1001;
+    }
+
+    /* 播放器图片基础样式 */
+    .player-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #005bb5;
+      transition: transform 0.5s ease-out;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      object-fit: cover;
+    }
+
+    /* 播放状态下的旋转动画 */
+    .player-image.playing {
+      animation: rotate 5s linear infinite;
+    }
+
+    /* 停止播放时的过渡效果 - 会平滑地停在当前位置 */
+    .player-image:not(.playing) {
+      animation: none;
+      /* 保持当前变换状态 */
+      transform: rotate(var(--rotation, 0deg));
+    }
+
+    /* 旋转动画关键帧 */
+    @keyframes rotate {
+      from {
+        transform: rotate(var(--rotation, 0deg));
+      }
+
+      to {
+        transform: rotate(calc(var(--rotation, 0deg) + 360deg));
+      }
+    }
+
+    .player-text {
+      margin-top: 10px;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      font-size: 20px;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+    }
+
+    /* 跳过按钮样式 */
+    a.aki-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1001;
+      text-decoration: none;
+      line-height: 1;
+      color: #03e9f4;
+      font-size: 16px;
+      display: inline-flex;
+      justify-content: center;
+    }
+
+    a.aki-btn::before,
+    a.aki-btn::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 30px;
+      height: 10px;
+      background: #ff1f71;
+      box-shadow: 0 0 5px #ff1f71, 0 0 15px #ff1f71, 0 0 30px #ff1f71, 0 0 60px #ff1f71;
+      border-radius: 10px;
+      transition: all 0.4s ease;
+    }
+
+    a.aki-btn::before {
+      top: -5px;
+    }
+
+    a.aki-btn::after {
+      bottom: -5px;
+    }
+
+    a.aki-btn:hover::before {
+      height: 50%;
+      width: 100%;
+      border-radius: 50px 50px 0 0;
+      top: 0;
+    }
+
+    a.aki-btn:hover::after {
+      height: 50%;
+      width: 100%;
+      border-radius: 0 0 50px 50px;
+      bottom: 0px;
+    }
+
+    a.aki-btn>span {
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+      padding: 20px 40px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border-radius: 50px;
+      overflow: hidden;
+    }
+
+    a.aki-btn>span::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -30px;
+      width: calc(50% + 30px);
+      height: 100%;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0.2), transparent);
+      transform: skewX(45deg);
+      transition: all 0.4s ease;
+    }
+
+    a.aki-btn:hover>span::before {
+      width: calc(100% + 60px);
+    }
+
+    /* 呆猫文字样式 */
+    .daimao-text {
+      position: fixed;
+      top: 20px;
+      right: 500px;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 120px;
+      line-height: 1.6;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      font-size: 24px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* 调整媒体容器布局 */
+    .media-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 30px;
+    }
+
+    /* 呆猫图片样式 */
+    .daimao-image {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      position: absolute;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    /* 初始位置 */
+    .daimao2-animate {
+      left: -450px;
+      top: 0;
+      animation: floatSideways 3s ease-in-out infinite;
+    }
+
+    .daimao4-animate {
+      left: -1000px;
+      top: 0;
+      animation: floatSideways 3s ease-in-out infinite reverse;
+    }
+
+    /* 左右漂浮动画 */
+    @keyframes floatSideways {
+      0% {
+        transform: translateX(0) rotate(0deg);
+      }
+
+      25% {
+        transform: translateX(15px) rotate(3deg);
+      }
+
+      75% {
+        transform: translateX(-15px) rotate(-3deg);
+      }
+
+      100% {
+        transform: translateX(0) rotate(0deg);
+      }
+    }
+
+    /* 上下漂浮动画 */
+    @keyframes floatUpDown {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+      }
+
+      25% {
+        transform: translateY(-15px) rotate(5deg) scale(1.05);
+      }
+
+      75% {
+        transform: translateY(10px) rotate(-5deg) scale(0.95);
+      }
+
+      100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+      }
+    }
+
+    /* 开心跳动动画 */
+    @keyframes happy {
+      0% {
+        transform: scale(1) rotate(0deg);
+      }
+
+      25% {
+        transform: scale(1.1) rotate(5deg);
+      }
+
+      50% {
+        transform: scale(0.9) rotate(-5deg);
+      }
+
+      75% {
+        transform: scale(1.05) rotate(3deg);
+      }
+
+      100% {
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    /* 悬停状态类 */
+    .daimao-hover {
+      animation: floatUpDown 2s ease-in-out infinite !important;
+      z-index: 1001;
+    }
+
+    /* 互动状态类 */
+    .daimao-interact {
+      animation: happy 0.5s ease-in-out !important;
+    }
+
+    /* 音频播放器位置调整 */
+    .music-player {
+      text-align: center;
+    }
+
+    /* 添加主内容区域的初始状态 */
+    #mainContent {
+      display: none;
+      opacity: 1;
+      transition: opacity 1s ease-in;
+    }
+
+    /* 当显示时的状态 */
+    #mainContent.visible {
+      display: block;
+      opacity: 1;
+    }
+
+    /* 调整 canvas 位置 */
+    .canvas {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+    }
+
+    #fireworkCanvas {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+    }
+
+    .left-music-players,
+    .right-music-players {
+      position: absolute;
+      top: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      z-index: 3;
+    }
+
+    .left-music-players {
+      left: -200px;
+    }
+
+    .right-music-players {
+      right: -200px;
+    }
+
+    .scroll-content {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 3;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+    }
+
+    .scroll-content h1 {
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+    }
+
+    .scroll-content h2 {
+      font-size: 24px;
+      margin: 20px 0;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+    }
+
+    .scroll-content p,
+    .scroll-content li {
+      font-size: 18px;
+      line-height: 1.6;
+      margin: 10px 0;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+    }
+
+    .music-player-item {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+    }
+
+    .music-player-item .player-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #005bb5;
+      object-fit: cover;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+    }
+
+    .music-player-item .player-image:hover {
+      transform: scale(1.1);
+    }
+
+    .music-player-item .player-text {
+      margin-top: 8px;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      font-size: 14px;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      white-space: nowrap;
+    }
+
+    /* 介绍容器样式 */
+    .intro-container {
+      position: relative;
+      margin: 20px 0;
+      padding: 10px;
+    }
+
+    /* 标题框样式 */
+    .intro-title {
+      display: inline-block;
+      position: relative;
+      padding: 12px 30px;
+      background: rgba(3, 233, 244, 0.1);
+      border: 3px solid #03e9f4;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    /* 添加可爱的装饰边框 */
+    .intro-title::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      right: -8px;
+      bottom: -8px;
+      border: 2px dashed #03e9f4;
+      border-radius: 30px;
+      opacity: 0.6;
+      animation: rotate 10s linear infinite;
+    }
+
+    /* 标题文字样式 */
+    .title-text {
+      font-size: 1.5em;
+      color: #03e9f4;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 添加可爱的装饰元素 */
+    .title-text::before,
+    .title-text::after {
+      content: '♪';
+      position: absolute;
+      color: #03e9f4;
+      font-size: 0.8em;
+      opacity: 0.8;
+    }
+
+    .title-text::before {
+      left: -25px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .title-text::after {
+      right: -25px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* 悬停效果 */
+    .intro-title:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(3, 233, 244, 0.3);
+      background: rgba(3, 233, 244, 0.2);
+    }
+
+    /* 图片容器样式 */
+    .intro-image {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+    }
+
+    /* 图片样式 */
+    .intro-image img {
+      max-width: 300px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 悬停时显示图片 */
+    .intro-title:hover .intro-image {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(20px);
+    }
+
+    /* 旋转动画 */
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* 添加小星星装饰 */
+    .intro-title::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(3, 233, 244, 0.1) 0%, transparent 10%),
+        radial-gradient(circle at 70% 70%, rgba(3, 233, 244, 0.1) 0%, transparent 10%);
+      border-radius: 25px;
+      pointer-events: none;
+    }
+
+    /* 添加呼吸光效 */
+    @keyframes glow {
+      0% {
+        box-shadow: 0 0 5px rgba(3, 233, 244, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 20px rgba(3, 233, 244, 0.5);
+      }
+
+      100% {
+        box-shadow: 0 0 5px rgba(3, 233, 244, 0.3);
+      }
+    }
+
+    .intro-title {
+      animation: glow 3s infinite;
+    }
+
+    /* 添加标题组样式 */
+    .title-group {
+      display: flex;
+      gap: 30px;
+      /* 两个框框之间的间距 */
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    /* 武器容器样式 */
+    .weapon-container {
+      position: relative;
+      padding: 10px;
+      display: inline-block;
+    }
+
+    /* 武器标题框样式 */
+    .weapon-title {
+      display: inline-block;
+      position: relative;
+      padding: 12px 30px;
+      background: rgba(244, 83, 3, 0.1);
+      border: 3px solid #f45303;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      top: -200px;
+      z-index: 999;
+    }
+
+    /* 标题文字样式 */
+    .weapon-title .title-text {
+      font-size: 1.5em;
+      color: #f45303;
+      text-shadow: 0 0 10px rgba(244, 83, 3, 0.3);
+    }
+
+    /* 武器列表容器 */
+    .weapon-list {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%) scaleY(0);
+      background: rgba(30, 30, 30, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      width: 300px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: top;
+      z-index: 1000;
+      overflow: visible;
+    }
+
+    /* 自定义滚动条样式 */
+    .weapon-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .weapon-list::-webkit-scrollbar-track {
+      background: rgba(244, 83, 3, 0.1);
+      border-radius: 4px;
+    }
+
+    .weapon-list::-webkit-scrollbar-thumb {
+      background: #f45303;
+      border-radius: 4px;
+    }
+
+    /* 武器项容器样式 */
+    .weapon-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border-radius: 12px;
+      background: rgba(244, 83, 3, 0.1);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    /* 武器内容样式 */
+    .weapon-content {
+      display: flex;
+      align-items: center;
+      z-index: 2;
+    }
+
+    /* 武器图标样式 */
+    .weapon-icon {
+      width: 36px;
+      height: 36px;
+      margin-right: 15px;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    /* 预览容器样式调整 */
+    .weapon-preview {
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%) scale(0);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      background: rgba(30, 30, 30, 0.95);
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(244, 83, 3, 0.3);
+    }
+
+    /* 预览图片样式 */
+    .preview-image {
+      width: 300px;
+      height: 300px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    /* 修改滑入动画 */
+    @keyframes slideLeft {
+      from {
+        left: 100%;
+        opacity: 0;
+      }
+
+      to {
+        left: -320px;
+        opacity: 1;
+      }
+    }
+
+    /* 悬停效果调整 */
+    .weapon-item:hover .weapon-preview {
+      transform: translateY(-50%) scale(1);
+      opacity: 1;
+      visibility: visible;
+      animation: slideLeft 0.4s ease-out forwards;
+    }
+
+    /* 优化预览图的背景效果 */
+    .weapon-preview::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      bottom: -5px;
+      left: -5px;
+      background: linear-gradient(45deg, #f45303, transparent);
+      border-radius: 15px;
+      z-index: -1;
+      opacity: 0.5;
+      filter: blur(8px);
+    }
+
+    /* 武器名称文字样式 */
+    .weapon-item span {
+      color: #f45303;
+      font-size: 1.1em;
+      font-weight: 500;
+      text-shadow: 0 0 5px rgba(244, 83, 3, 0.2);
+    }
+
+    /* 悬停效果 */
+    .weapon-title:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(244, 83, 3, 0.3);
+      background: rgba(244, 83, 3, 0.2);
+    }
+
+    .weapon-title:hover .weapon-list {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) scaleY(1);
+    }
+
+    /* 添加装饰性动画 */
+    .weapon-title::before {
+      content: '⚔️';
+      position: absolute;
+      left: -25px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .weapon-title::after {
+      content: '🛡️';
+      position: absolute;
+      right: -25px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* 添加脉冲动画 */
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(244, 83, 3, 0.4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(244, 83, 3, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(244, 83, 3, 0);
+      }
+    }
+
+    .weapon-title {
+      animation: pulse 2s infinite;
+    }
+
+    /* 设置页面基础样式 */
+    body {
+      background: #800000;
+      /* 暗红色底色 */
+      position: relative;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* 动态背景容器 */
+    .festive-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    /* 动态条纹背景 */
+    .moving-stripes {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(45deg,
+          rgba(255, 69, 0, 0.15) 0px,
+          /* 橙红色条纹 */
+          rgba(255, 69, 0, 0.15) 20px,
+          rgba(255, 140, 0, 0.15) 20px,
+          /* 深橙色条纹 */
+          rgba(255, 140, 0, 0.15) 40px,
+          rgba(255, 215, 0, 0.15) 40px,
+          /* 金色条纹 */
+          rgba(255, 215, 0, 0.15) 60px);
+      animation: moveStripes 20s linear infinite;
+    }
+
+    /* 飘动的祥云层 */
+    .floating-pattern {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background-image:
+        radial-gradient(circle at 30% 30%, rgba(255, 215, 0, 0.1) 0%, transparent 30%),
+        radial-gradient(circle at 70% 70%, rgba(255, 69, 0, 0.1) 0%, transparent 30%),
+        radial-gradient(circle at 50% 50%, rgba(255, 140, 0, 0.1) 0%, transparent 30%);
+      animation: floatPattern 15s ease-in-out infinite alternate;
+    }
+
+    /* 光效叠加层 */
+    .light-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg,
+          rgba(255, 69, 0, 0.2) 0%,
+          rgba(255, 140, 0, 0.2) 50%,
+          rgba(255, 215, 0, 0.2) 100%);
+      animation: shiftGradient 10s ease-in-out infinite alternate;
+    }
+
+    /* 条纹移动动画 */
+    @keyframes moveStripes {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* 祥云飘动动画 */
+    @keyframes floatPattern {
+      0% {
+        transform: translate(-10%, -10%) rotate(-5deg);
+      }
+
+      100% {
+        transform: translate(10%, 10%) rotate(5deg);
+      }
+    }
+
+    /* 渐变光效动画 */
+    @keyframes shiftGradient {
+      0% {
+        opacity: 0.5;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+      }
+
+      100% {
+        opacity: 0.5;
+        transform: scale(1);
+      }
+    }
+
+    /* 内容容器样式调整 */
+    .content-container {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(3px);
+    }
+
+    /* 内容容器边框发光效果 */
+    .content-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg,
+          rgba(255, 69, 0, 0.3),
+          rgba(255, 215, 0, 0.3),
+          rgba(255, 140, 0, 0.3));
+      border-radius: 22px;
+      z-index: -1;
+      animation: borderPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes borderPulse {
+
+      0%,
+      100% {
+        opacity: 0.5;
+      }
+
+      50% {
+        opacity: 0.8;
+      }
+    }
+
+    /* 添加响应式适配 */
+    @media (max-width: 768px) {
+      body::before {
+        border-width: 10px;
+      }
+
+      .content-container {
+        margin: 10px;
+        padding: 20px;
+      }
+    }
+
+    /* 灯笼样式 */
+    .lantern {
+      position: fixed;
+      width: 60px;
+      height: 80px;
+      background: #ff4d4d;
+      border-radius: 50% / 15%;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+      animation: swingLantern 3s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    .lantern::before {
+      content: '福';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #FFD700;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .lantern::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 20px;
+      background: #FFD700;
+      border-radius: 5px;
+    }
+
+    /* 春联样式 */
+    .couplet {
+      position: fixed;
+      width: 40px;
+      height: 300px;
+      background: #8B0000;
+      padding: 20px 10px;
+      writing-mode: vertical-rl;
+      color: #FFD700;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
+      z-index: 2;
+    }
+
+    /* 灯笼摆动动画 */
+    @keyframes swingLantern {
+
+      0%,
+      100% {
+        transform: rotate(-5deg);
+      }
+
+      50% {
+        transform: rotate(5deg);
+      }
+    }
+
+    /* 装饰元素定位 */
+    .decorations {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* 添加一些金色星星装饰 */
+    .star {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #FFD700;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      animation: twinkle 2s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: 0.3;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    /* GitHub 链接容器样式 */
+    .github-container {
+      position: relative;
+    }
+
+    .github-link {
+      display: block;
+      text-decoration: none;
+      padding: 15px 25px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #03e9f4;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(3, 233, 244, 0.3);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .github-content {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .github-icon {
+      display: flex;
+      align-items: center;
+      animation: pulse 2s infinite;
+    }
+
+    .github-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-text {
+      color: #03e9f4;
+      font-size: 1.2em;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+    }
+
+    .sub-text {
+      color: #03e9f4;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    /* 悬停效果 */
+    .github-link:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(3, 233, 244, 0.5);
+      background: rgba(3, 233, 244, 0.1);
+    }
+
+    .github-link:hover .github-icon {
+      animation: bounce 0.5s ease infinite;
+    }
+
+    /* 跳动动画 */
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    /* 呼吸光效 */
+    @keyframes pulse {
+      0% {
+        filter: drop-shadow(0 0 5px rgba(3, 233, 244, 0.3));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 15px rgba(3, 233, 244, 0.5));
+      }
+
+      100% {
+        filter: drop-shadow(0 0 5px rgba(3, 233, 244, 0.3));
+      }
+    }
+
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      .github-container {
+        bottom: 20px;
+      }
+
+      .github-link {
+        padding: 10px 20px;
+      }
+
+      .main-text {
+        font-size: 1em;
+      }
+
+      .sub-text {
+        font-size: 0.8em;
+      }
+    }
+
+    /* 创建一个容器来包含两个按钮 */
+    .bottom-buttons {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 30px;
+      z-index: 1000;
+    }
+
+    /* 游戏按钮样式修改 */
+    .game-link {
+      display: block;
+      text-decoration: none;
+      padding: 15px 30px;
+      background: rgba(255, 69, 0, 0.8);
+      border: 2px solid #FFD700;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      animation: bounce-light 2s infinite;
+    }
+
+    .game-button-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-button-text .main-text {
+      color: #FFD700;
+      font-size: 1.3em;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .game-button-text .sub-text {
+      color: #FFD700;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    /* 悬停效果 */
+    .game-link:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      background: rgba(255, 69, 0, 0.9);
+    }
+
+    /* 游戏按钮容器样式修改 */
+    .game-button-container {
+      position: relative;
+    }
+
+    /* 左侧按钮组样式 */
+    .left-buttons {
+      position: absolute;
+      left: 50px;
+      top: 1000px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 300px;
+      padding: 20px 0;
+      z-index: 9999;
+    }
+
+    /* 右侧按钮组样式 */
+    .right-buttons {
+      position: absolute;
+      right: 50px;
+      top: 1000px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 300px;
+      padding: 20px 0;
+      z-index: 9999;
+    }
+
+    /* 侧边按钮特定样式 */
+    .side-btn {
+      pointer-events: auto;
+      font-size: 16px !important;
+      padding: 15px 25px !important;
+      white-space: nowrap;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .side-btn:hover {
+      opacity: 1;
+    }
+
+    /* 修改选择器，只针对侧边按钮 */
+    .side-buttons-container .aki-btn {
+      text-decoration: none;
+      line-height: 1;
+      display: inline-block;
+      position: relative;
+      padding: 15px 20px;
+      font-size: 16px;
+      background: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
+      background-size: 400%;
+      text-align: center;
+      color: #fff;
+      border-radius: 50px;
+      animation: sun 6s linear infinite;
+      animation-play-state: paused;
+      overflow: hidden;
+    }
+
+    .side-buttons-container .aki-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      background-size: 400%;
+      border-radius: 50px;
+      filter: blur(4px);
+      z-index: -1;
+      animation: sun 6s linear infinite;
+      animation-play-state: paused;
+    }
+
+    @keyframes sun {
+      100% {
+        background-position: -400% 0;
+      }
+    }
+
+    .side-buttons-container .aki-btn:hover::before,
+    .side-buttons-container .aki-btn:hover {
+      animation-play-state: running;
+    }
+
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+
+      .left-buttons,
+      .right-buttons {
+        display: none;
+        /* 在移动端隐藏侧边按钮 */
+      }
+    }
+
+    /* 侧边按钮容器样式 */
+    .side-buttons-container {
+      position: relative;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      /* 初始状态设为隐藏 */
+      transition: opacity 0.5s ease;
+      /* 添加过渡效果 */
+      display: none;
+      /* 初始状态不显示 */
+    }
+
+    /* 当主内容显示时显示侧边按钮 */
+    #mainContent.visible+.side-buttons-container {
+      opacity: 1;
+      display: block;
+    }
+
+    /* 修改提示文字的颜色和大小 */
+    .tips-text {
+      color: #40E0D0;
+      /* 蓝绿色 */
+      font-size: 18px;
+      /* 调整为原始大小 */
+      line-height: 1.8;
+      margin: 15px 0;
+      text-align: left;
+      padding-left: 20px;
+    }
+
+    .tips-text li {
+      color: #40E0D0;
+      margin: 8px 0;
+    }
+
+    /* 调整自我介绍文字的样式 */
+    .intro-text {
+      color: #40E0D0;
+      font-size: 28px;
+      line-height: 2.0;
+      text-align: center;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 3px rgba(64, 224, 208, 0.3);
+      margin: 30px 0;
+      z-index: 1;
+      position: relative;
+    }
+
+    /* 确保图片在文字上层 */
+    .intro-image {
+      position: relative;
+      z-index: 2;
+      /* 图片层级高于文字 */
+    }
+
+    /* 修改新年展望和新年寄语的样式 */
+    .wish-text {
+      color: #40E0D0;
+      font-size: 20px;
+      /* 调整为原始大小 */
+      line-height: 2.2;
+      margin: 20px 0;
+      text-align: left;
+      padding-left: 25px;
+      letter-spacing: 1px;
+    }
+
+    /* 主标题样式调整 */
+    h1 {
+      color: #40E0D0;
+      font-size: 48px;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      text-align: center;
+      margin: 20px 0;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    /* 左右两侧按钮文字样式 */
+    .side-btn {
+      color: #fff;
+      font-size: 18px;
+      background: linear-gradient(45deg, #4169E1, #1E90FF);
+      padding: 12px 24px;
+      border-radius: 25px;
+      text-decoration: none;
+      margin: 10px 0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    /* 底部按钮文字样式 */
+    .game-link .main-text,
+    .github-link .main-text {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .game-link .sub-text,
+    .github-link .sub-text {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    /* 视频模态框样式 */
+    .video-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* 修改视频容器样式 */
+    .video-container {
+      position: relative;
+      /* 确保容器是相对定位的 */
+      width: 80%;
+      max-width: 800px;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      max-height: 80vh;
+    }
+
+    #videoPlayer {
+      width: 100%;
+      /* 设置视频最大高度，确保控制栏可见 */
+      max-height: calc(80vh - 100px);
+      object-fit: contain;
+      display: block;
+    }
+
+    /* 视频控制栏布局优化 */
+    .video-controls {
+      position: relative;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to bottom, rgba(139, 0, 0, 0.9), rgba(80, 0, 0, 0.95));
+      border-top: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 15px;
+      opacity: 1;
+      transition: opacity 0.3s;
+      z-index: 1002;
+    }
+
+    /* 添加主控制区域容器 */
+    .controls-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    /* 左侧控制按钮组 */
+    .controls-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 右侧控制按钮组 */
+    .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 音量控制容器 */
+    .volume-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* 控制按钮基础样式 */
+    .control-btn {
+      position: relative;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      color: #FFD700;
+      cursor: pointer;
+      padding: 8px 12px;
+      font-size: 18px;
+      border-radius: 4px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.2);
+    }
+
+    /* 提示框样式 */
+    .control-btn[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      background: rgba(139, 0, 0, 0.95);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      font-size: 14px;
+      white-space: nowrap;
+      border-radius: 4px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      margin-bottom: 5px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+      z-index: 1003;
+      font-family: "楷体", KaiTi, serif;
+    }
+
+    /* 提示框小三角形 */
+    .control-btn[data-tooltip]::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(139, 0, 0, 0.95);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      margin-bottom: -6px;
+      z-index: 1003;
+    }
+
+    /* 显示提示框 */
+    .control-btn[data-tooltip]:hover::after,
+    .control-btn[data-tooltip]:hover::before {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 215, 0, 0.2);
+      border-color: #FFD700;
+      color: #FFF;
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    /* 时间显示样式优化 */
+    .time-display {
+      color: #FFD700;
+      font-size: 16px;
+      min-width: 120px;
+      text-align: center;
+      padding: 0 10px;
+      font-family: "楷体", KaiTi, serif;
+      text-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
+    }
+
+    /* 音量控制样式优化 */
+    .volume-slider {
+      background: rgba(255, 215, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 3px;
+      width: 80px;
+      height: 6px;
+      cursor: pointer;
+      margin: 0 10px;
+    }
+
+    .volume-filled {
+      background: #FFD700;
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    /* 视频模态框样式优化 */
+    .video-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* 添加新的提示框样式 */
+    .scroll-hint {
+      position: fixed;
+      /* 改为 fixed 定位 */
+      bottom: 100px;
+      /* 调整位置 */
+      right: 100px;
+      padding: 15px 25px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #03e9f4;
+      border-radius: 15px;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      /* 添加字体 */
+      font-size: 1.2em;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      box-shadow: 0 0 15px rgba(3, 233, 244, 0.3);
+      animation: glow 2s ease-in-out infinite;
+      backdrop-filter: blur(5px);
+      z-index: 1002;
+      /* 确保在最上层 */
+      pointer-events: none;
+      /* 防止干扰点击 */
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 15px rgba(3, 233, 244, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 30px rgba(3, 233, 244, 0.5);
+      }
+    }
+
+    /* 添加新的提示框样式 */
+    .scroll-hint {
+      position: fixed;
+      /* 改为 fixed 定位 */
+      bottom: 100px;
+      /* 调整位置 */
+      right: 100px;
+      padding: 15px 25px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #03e9f4;
+      border-radius: 15px;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      /* 添加字体 */
+      font-size: 1.2em;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      box-shadow: 0 0 15px rgba(3, 233, 244, 0.3);
+      animation: glow 2s ease-in-out infinite;
+      backdrop-filter: blur(5px);
+      z-index: 1002;
+      /* 确保在最上层 */
+      pointer-events: none;
+      /* 防止干扰点击 */
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 15px rgba(3, 233, 244, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 30px rgba(3, 233, 244, 0.5);
+      }
+    }
+
+    /* 修改关闭按钮样式，移除提示框相关样式 */
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1004;
+      background: rgba(139, 0, 0, 0.8);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(139, 0, 0, 0.95);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    }
+
+    /* 修改侧边按钮样式，添加视频图标 */
+    .side-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .side-btn::before {
+      content: '▶';
+      font-size: 14px;
+    }
+
+    /* 视频控制栏整体样式 */
+    .video-controls {
+      background: linear-gradient(to bottom, rgba(139, 0, 0, 0.9), rgba(80, 0, 0, 0.95));
+      border-top: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 15px;
+    }
+
+    /* 进度条容器样式 */
+    .progress-bar {
+      position: relative;
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 215, 0, 0.2);
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 15px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      overflow: visible;
+      /* 允许呆猫游显示在进度条外部 */
+    }
+
+    /* 进度条填充部分样式 */
+    .progress-filled {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: #FFD700;
+      border-radius: 4px;
+      width: 0%;
+      /* 初始宽度为0 */
+      transition: width 0.1s linear;
+    }
+
+    /* 修改呆猫游的容器定位 */
+    .progress-filled::after {
+      content: '';
+      position: absolute;
+      right: 0px;
+      /* 调整呆猫游的水平位置 */
+      top: -65px;
+      /* 调整呆猫游的垂直位置 */
+      width: 80px;
+      height: 80px;
+      background-image: url('images/daimaoyou.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      pointer-events: none;
+      z-index: 2;
+      animation: daimaoAnimation 2s infinite;
+      transform-origin: center center;
+    }
+
+    /* 确保进度条在视频控制栏中正确显示 */
+    .video-controls {
+      position: relative;
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(to bottom, rgba(139, 0, 0, 0.9), rgba(80, 0, 0, 0.95));
+      z-index: 1;
+    }
+
+    /* 添加呆猫游的动画关键帧 */
+    @keyframes daimaoAnimation {
+      0% {
+        transform: translateX(50%) translateY(0) rotate(0deg);
+      }
+
+      25% {
+        transform: translateX(60%) translateY(-15px) rotate(15deg);
+      }
+
+      50% {
+        transform: translateX(50%) translateY(0) rotate(0deg);
+      }
+
+      75% {
+        transform: translateX(40%) translateY(-15px) rotate(-15deg);
+      }
+
+      100% {
+        transform: translateX(50%) translateY(0) rotate(0deg);
+      }
+    }
+
+    /* 鼠标悬停时的动画增强 */
+    .progress-bar:hover .progress-filled::after {
+      animation: daimaoHoverAnimation 1s infinite;
+    }
+
+    @keyframes daimaoHoverAnimation {
+      0% {
+        transform: translateX(50%) translateY(0) rotate(0deg) scale(1);
+      }
+
+      25% {
+        transform: translateX(70%) translateY(-25px) rotate(25deg) scale(1.2);
+      }
+
+      50% {
+        transform: translateX(50%) translateY(0) rotate(0deg) scale(1);
+      }
+
+      75% {
+        transform: translateX(30%) translateY(-25px) rotate(-25deg) scale(1.2);
+      }
+
+      100% {
+        transform: translateX(50%) translateY(0) rotate(0deg) scale(1);
+      }
+    }
+
+    /* 控制按钮基础样式 */
+    .control-btn {
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      color: #FFD700;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: all 0.3s;
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.2);
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 215, 0, 0.2);
+      border-color: #FFD700;
+      color: #FFF;
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    /* 音量滑块样式 */
+    .volume-slider {
+      background: rgba(255, 215, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 3px;
+    }
+
+    .volume-filled {
+      background: #FFD700;
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    /* 时间显示样式 */
+    .time-display {
+      color: #FFD700;
+      font-family: "楷体", KaiTi, serif;
+      text-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
+    }
+
+    /* 提示框样式 */
+    .control-btn[data-tooltip]::after {
+      background: rgba(139, 0, 0, 0.95);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      font-family: "楷体", KaiTi, serif;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .control-btn[data-tooltip]::before {
+      border-top-color: rgba(139, 0, 0, 0.95);
+    }
+
+    /* 关闭按钮特殊样式 */
+    .close-btn {
+      background: rgba(139, 0, 0, 0.8);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      width: 35px;
+      height: 35px;
+    }
+
+    .close-btn:hover {
+      background: rgba(139, 0, 0, 0.95);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    }
+
+    /* 视频容器样式 */
+    .video-container {
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      box-shadow: 0 0 20px rgba(139, 0, 0, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    /* 播放器激活状态的特效 */
+    .video-controls:hover .control-btn,
+    .video-controls:hover .progress-bar,
+    .video-controls:hover .volume-slider {
+      border-color: rgba(255, 215, 0, 0.5);
+    }
+
+    /* 添加字体声明 */
+    @font-face {
+      font-family: 'KoseFont';
+      src: url('fonts/Kosefont-JP.ttf') format('truetype'),
+        url('fonts/KosefontP-JP.ttf') format('truetype');
+    }
+
+    /* 修改时间显示样式 */
+    .time-display {
+      color: #FFD700;
+      font-family: 'KoseFont', Arial, sans-serif;
+      text-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
+    }
+
+    /* 修改提示框样式 */
+    .control-btn[data-tooltip]::after {
+      background: rgba(139, 0, 0, 0.95);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      font-family: 'KoseFont', Arial, sans-serif;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    /* 修改所有控制按钮的文字样式 */
+    .control-btn {
+      font-family: 'KoseFont', Arial, sans-serif;
+    }
+
+    /* 确保所有播放器相关的文字都使用新字体 */
+    .video-controls,
+    .volume-container,
+    .progress-bar,
+    .controls-left,
+    .controls-right {
+      font-family: 'KoseFont', Arial, sans-serif;
+    }
+
+    /* 修改关闭按钮提示框位置 */
+    .close-btn[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: -30px;
+      /* 向上调整一点 */
+      right: 30px;
+      /* 向右调整，不要太靠左 */
+      padding: 5px 10px;
+      background: rgba(139, 0, 0, 0.95);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      font-size: 14px;
+      white-space: nowrap;
+      border-radius: 4px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+      z-index: 1003;
+      font-family: 'KoseFont', Arial, sans-serif;
+    }
+
+    /* 修改提示框小三角形的位置 */
+    .close-btn[data-tooltip]::before {
+      content: '';
+      position: absolute;
+      top: 100%;
+      /* 改为从顶部开始计算 */
+      right: 40px;
+      /* 配合提示框位置调整 */
+      border: 6px solid transparent;
+      border-bottom-color: rgba(139, 0, 0, 0.95);
+      /* 改为向下的三角形 */
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      margin-top: -12px;
+      /* 微调三角形位置 */
+      z-index: 1003;
+    }
+
+    /* 显示提示框的触发条件保持不变 */
+    .close-btn[data-tooltip]:hover::after,
+    .close-btn[data-tooltip]:hover::before {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* 添加新的提示框样式 */
+    .scroll-hint {
+      position: fixed;
+      /* 改为 fixed 定位 */
+      bottom: 110px;
+      /* 调整位置 */
+      right: 0px;
+      padding: 15px 25px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #03e9f4;
+      border-radius: 15px;
+      color: #03e9f4;
+      font-family: 'KoseFont', Arial, sans-serif;
+      /* 添加字体 */
+      font-size: 1.2em;
+      text-shadow: 0 0 10px rgba(3, 233, 244, 0.3);
+      box-shadow: 0 0 15px rgba(3, 233, 244, 0.3);
+      animation: glow 2s ease-in-out infinite;
+      backdrop-filter: blur(5px);
+      z-index: 1002;
+      /* 确保在最上层 */
+      pointer-events: none;
+      /* 防止干扰点击 */
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 15px rgba(3, 233, 244, 0.3);
+      }
+
+      50% {
+        box-shadow: 0 0 30px rgba(3, 233, 244, 0.5);
+      }
+    }
+  </style>
+  <!-- 添加 CSP 头部 -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+</head>
+
+<body>
+  <!-- 添加到 body 标签内，在所有内容之前 -->
+  <div class="festive-bg">
+    <div class="moving-stripes"></div>
+    <div class="floating-pattern"></div>
+    <div class="light-overlay"></div>
+  </div>
+
+  <!-- 烟花动画部分 -->
+  <div id="fireworkSection">
+    <!-- 在这里添加提示框 -->
+    <div class="scroll-hint">别急着划走，老大！！先看完烟花喵！！！</div>
+
+    <canvas id="fireworkCanvas"></canvas>
+    <canvas class="canvas"></canvas>
+
+    <!-- 将所有右上角内容放入烟花部分 -->
+    <div class="corner-content">
+      <div class="daimao-text">
+        <div>没错，老大，我就是呆猫！</div>
+        <div>旁边有一段来自呆猫的祝福！！</div>
+        <div>快来听一听喵！！！</div>
+      </div>
+      <div class="media-container">
+        <img src="images/daimao2.png" alt="Daimao" class="daimao-image daimao2-animate">
+        <img src="images/daimao4.png" alt="Daimao4" class="daimao-image daimao4-animate">
+        <div class="music-player">
+          <img src="images/cartoon-music-player.png" alt="Music Player" class="player-image" id="playPauseButton">
+          <p class="player-text">点这里播放/暂停来自呆猫的祝福喵！🎵</p>
+          <audio id="audioPlayer" src="audio/zhufu.mp3" preload="auto"></audio>
+        </div>
+      </div>
+    </div>
+
+    <!-- 跳过按钮 -->
+    <a href="javascript:;" class="aki-btn" onclick="skipAnimation()">
+      <span>老大点击这里就可以跳过动画了喵</span>
+    </a>
+  </div>
+
+  <!-- 添加到 body 标签内，在内容之前 -->
+  <div class="decorations">
+    <!-- 左边春联 -->
+    <div class="couplet" style="left: 20px; top: 50%; transform: translateY(-50%);">
+      新春快乐福满门
+    </div>
+
+    <!-- 右边春联 -->
+    <div class="couplet" style="right: 20px; top: 50%; transform: translateY(-50%);">
+      万事如意年年好
+    </div>
+
+    <!-- 左上角灯笼 -->
+    <div class="lantern" style="left: 100px; top: 30px;"></div>
+
+    <!-- 右上角灯笼 -->
+    <div class="lantern" style="right: 100px; top: 30px;"></div>
+
+    <!-- 添加一些星星装饰 -->
+    <div class="star" style="top: 15%; left: 25%;"></div>
+    <div class="star" style="top: 25%; right: 30%;"></div>
+    <div class="star" style="top: 45%; left: 15%;"></div>
+    <div class="star" style="top: 65%; right: 20%;"></div>
+    <div class="star" style="top: 75%; left: 35%;"></div>
+  </div>
+
+  <!-- 在 body 标签内,主内容之前添加按钮容器 -->
+  <div class="side-buttons-container">
+    <!-- 左侧按钮组 -->
+    <div class="left-buttons">
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm1.mp4"
+        data-audio="audio/daimao.mp3">跳啦啦操的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm2.mp4"
+        data-audio="audio/rixi.mp3">跟着老大打猎的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm3.mp4"
+        data-audio="audio/hange.mp3">嚎啕大哭的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm4.mp4"
+        data-audio="audio/qinghuaci.mp3">晕船的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm5.mp4" data-audio="audio/DJ.mp3">红温的小小老子</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm6.mp4"
+        data-audio="audio/jiefu.mp3">给老大种果实的小小呆猫</a>
+    </div>
+
+    <!-- 右侧按钮组 -->
+    <div class="right-buttons">
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm7.mp4"
+        data-audio="audio/dianyin.mp3">被派遣的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm8.mp4"
+        data-audio="audio/chunjie.mp3">打鼓的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm9.mp4"
+        data-audio="audio/hajimi.mp3">蛄蛹的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm10.mp4"
+        data-audio="audio/shengdan.mp3">拍手的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm11.mp4"
+        data-audio="audio/haha.mp3">踢方步的小小呆猫</a>
+      <a href="javascript:;" class="aki-btn side-btn" data-video="videos/dm12.mp4"
+        data-audio="audio/beiliya.mp3">若有所思的小小呆猫</a>
+    </div>
+  </div>
+
+  <!-- 添加视频播放弹窗 -->
+  <div id="videoModal" class="video-modal">
+    <div class="video-container">
+      <video id="videoPlayer" loop>
+        您的浏览器不支持视频播放。
+      </video>
+
+      <!-- 将关闭按钮移到这里 -->
+      <button class="close-btn">×</button>
+
+      <div class="video-controls">
+        <div class="progress-bar">
+          <div class="progress-filled"></div>
+        </div>
+        <div class="controls-main">
+          <div class="controls-left">
+            <button class="play-btn control-btn" data-tooltip="播放">
+              <i class="play-icon">▶</i>
+            </button>
+            <div class="volume-container">
+              <button class="mute-btn control-btn" data-tooltip="音量：100%">
+                <i class="volume-icon">🔊</i>
+              </button>
+              <div class="volume-slider">
+                <div class="volume-filled"></div>
+              </div>
+            </div>
+            <div class="time-display">
+              <span class="current-time">0:00</span>
+              <span>/</span>
+              <span class="total-time">0:00</span>
+            </div>
+          </div>
+          <div class="controls-right">
+            <button class="loop-btn control-btn" data-tooltip="循环播放：关闭">🔁</button>
+            <button class="save-btn control-btn" data-tooltip="保存视频">💾</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加视频控制脚本 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('videoModal');
+      const video = document.getElementById('videoPlayer');
+      const progressBar = document.querySelector('.progress-bar');
+      const progressFilled = document.querySelector('.progress-filled');
+      const playBtn = document.querySelector('.play-btn');
+      const playIcon = document.querySelector('.play-icon');
+      const muteBtn = document.querySelector('.mute-btn');
+      const volumeIcon = document.querySelector('.volume-icon');
+      const volumeSlider = document.querySelector('.volume-slider');
+      const volumeFilled = document.querySelector('.volume-filled');
+      const currentTimeSpan = document.querySelector('.current-time');
+      const totalTimeSpan = document.querySelector('.total-time');
+      const loopBtn = document.querySelector('.loop-btn');
+      const saveBtn = document.querySelector('.save-btn');
+      const closeBtn = document.querySelector('.close-btn');
+
+      // 播放/暂停控制
+      playBtn.addEventListener('click', togglePlay);
+      video.addEventListener('click', togglePlay);
+
+      function togglePlay() {
+        if (video.paused) {
+          video.play();
+          playIcon.textContent = '⏸';
+        } else {
+          video.pause();
+          playIcon.textContent = '▶';
+        }
+      }
+
+      // 进度条控制
+      video.addEventListener('timeupdate', () => {
+        const percent = (video.currentTime / video.duration) * 100;
+        progressFilled.style.width = `${percent}%`;
+        currentTimeSpan.textContent = formatTime(video.currentTime);
+      });
+
+      video.addEventListener('loadedmetadata', () => {
+        totalTimeSpan.textContent = formatTime(video.duration);
+      });
+
+      progressBar.addEventListener('click', (e) => {
+        const rect = progressBar.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / progressBar.offsetWidth;
+        video.currentTime = pos * video.duration;
+      });
+
+      // 添加拖动功能
+      let isDragging = false;
+
+      progressBar.addEventListener('mousedown', () => {
+        isDragging = true;
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          const rect = progressBar.getBoundingClientRect();
+          const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / progressBar.offsetWidth));
+          video.currentTime = pos * video.duration;
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // 音量控制
+      muteBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+        volumeIcon.textContent = video.muted ? '🔇' : '🔊';
+        volumeFilled.style.width = video.muted ? '0%' : `${video.volume * 100}%`;
+      });
+
+      volumeSlider.addEventListener('click', (e) => {
+        const volume = e.offsetX / volumeSlider.offsetWidth;
+        video.volume = volume;
+        volumeFilled.style.width = `${volume * 100}%`;
+        video.muted = false;
+        volumeIcon.textContent = '🔊';
+      });
+
+      // 循环播放控制
+      loopBtn.addEventListener('click', () => {
+        video.loop = !video.loop;
+        loopBtn.style.color = video.loop ? '#03e9f4' : 'white';
+      });
+
+      // 保存视频
+      saveBtn.addEventListener('click', () => {
+        const videoSrc = video.src;
+        const link = document.createElement('a');
+        link.href = videoSrc;
+        link.download = videoSrc.split('/').pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+
+      // 关闭视频
+      closeBtn.addEventListener('click', closeVideo);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeVideo();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeVideo();
+      });
+
+      function closeVideo() {
+        video.pause();
+        video.currentTime = 0;
+        modal.style.display = 'none';
+      }
+
+      // 格式化时间
+      function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        seconds = Math.floor(seconds % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
+
+      // 更新侧边栏按钮点击事件
+      const buttons = document.querySelectorAll('.side-btn');
+      buttons.forEach(button => {
+        button.addEventListener('click', function () {
+          const videoSrc = this.getAttribute('data-video');
+          video.src = videoSrc;
+          modal.style.display = 'flex';
+          video.play();
+          playIcon.textContent = '⏸';
+        });
+      });
+
+      // 播放/暂停按钮提示更新
+      function updatePlayButtonTooltip() {
+        playBtn.setAttribute('data-tooltip', video.paused ? '播放' : '暂停');
+      }
+
+      // 音量按钮提示更新
+      function updateVolumeTooltip() {
+        const volumePercent = Math.round(video.volume * 100);
+        const muteStatus = video.muted ? '已静音' : `音量：${volumePercent}%`;
+        muteBtn.setAttribute('data-tooltip', muteStatus);
+      }
+
+      // 循环按钮提示更新
+      function updateLoopTooltip() {
+        loopBtn.setAttribute('data-tooltip', `循环播放：${video.loop ? '开启' : '关闭'}`);
+      }
+
+      // 添加事件监听器
+      video.addEventListener('play', updatePlayButtonTooltip);
+      video.addEventListener('pause', updatePlayButtonTooltip);
+      video.addEventListener('volumechange', updateVolumeTooltip);
+
+      // 更新循环按钮状态
+      loopBtn.addEventListener('click', () => {
+        video.loop = !video.loop;
+        loopBtn.style.color = video.loop ? '#03e9f4' : 'white';
+        updateLoopTooltip();
+      });
+
+      // 音量滑块事件
+      volumeSlider.addEventListener('input', (e) => {
+        const volume = e.target.value / 100;
+        video.volume = volume;
+        video.muted = false;
+        updateVolumeTooltip();
+      });
+
+      // 静音按钮事件
+      muteBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+        volumeIcon.textContent = video.muted ? '🔇' : '🔊';
+        updateVolumeTooltip();
+      });
+
+      // 初始化提示文字
+      updatePlayButtonTooltip();
+      updateVolumeTooltip();
+      updateLoopTooltip();
+    });
+  </script>
+
+  <!-- 主内容区域 -->
+  <div id="mainContent" class="scroll-content">
+    <!-- 添加粒子画布和旋转图片到主内容区域 -->
+    <canvas id="particleCanvas"></canvas>
+    <img id="rotating-image" src="images/daimao1.png" alt="Rotating Image">
+
+    <h1>呆猫祝老大们新年快乐喵！！！(づ￣ 3￣)づ</h1>
+    <h1>（按下两侧的按钮可以看见呆猫的表情包！！！【虽然很糊】）</h1>
+    <div class="section">
+      <div class="title-group">
+        <div class="intro-container">
+          <div class="intro-title">
+            <span class="title-text">呆猫の自我介绍</span>
+            <div class="intro-image">
+              <img src="images/daimaojieshao.png" alt="呆猫介绍">
+            </div>
+          </div>
+        </div>
+
+        <div class="weapon-container">
+          <div class="weapon-title">
+            <span class="title-text">老大の十四把武器</span>
+            <div class="weapon-list">
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/caochonggun.png" alt="操虫棍" class="weapon-icon">
+                  <span>操虫棍</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/caochonggun.png" alt="操虫棍预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/taidao.png" alt="太刀" class="weapon-icon">
+                  <span>太刀</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/taidao.png" alt="太刀预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/dajian.png" alt="大剑" class="weapon-icon">
+                  <span>大剑</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/dajian.png" alt="大剑预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/dachui.png" alt="大锤" class="weapon-icon">
+                  <span>大锤</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/dachui.png" alt="大锤预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/shuangdao.png" alt="双刀" class="weapon-icon">
+                  <span>双刀</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/shuangdao.png" alt="双刀预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/zhanfu.png" alt="斩斧" class="weapon-icon">
+                  <span>斩斧</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/zhanfu.png" alt="斩斧预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/dunfu.png" alt="盾斧" class="weapon-icon">
+                  <span>盾斧</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/dunfu.png" alt="盾斧预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/zhongnu.png" alt="重弩" class="weapon-icon">
+                  <span>重弩</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/zhongnu.png" alt="重弩预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/qingnu.png" alt="轻弩" class="weapon-icon">
+                  <span>轻弩</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/qingnu.png" alt="轻弩预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/gongjian.png" alt="弓箭" class="weapon-icon">
+                  <span>弓箭</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/gongjian.png" alt="弓箭预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/changqiang.png" alt="长枪" class="weapon-icon">
+                  <span>长枪</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/changqiang.png" alt="长枪预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/tongqiang.png" alt="统枪" class="weapon-icon">
+                  <span>统枪</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/tongqiang.png" alt="统枪预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/pianshoujian.png" alt="片手剑" class="weapon-icon">
+                  <span>片手剑</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/pianshoujian.png" alt="片手剑预览" class="preview-image">
+                </div>
+              </div>
+              <div class="weapon-item">
+                <div class="weapon-content">
+                  <img src="images/shouliedi.png" alt="狩猎笛" class="weapon-icon">
+                  <span>狩猎笛</span>
+                </div>
+                <div class="weapon-preview">
+                  <img src="images/shouliedi.png" alt="狩猎笛预览" class="preview-image">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="quote">
+        <div class="intro-container">
+          <p class="intro-text">
+            愿新年的阳光温暖老大的每一个日子，让每一天都充满希望和喜悦喵~
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <h2>呆猫对老大の新年展望</h2>
+      <ul class="wish-text">
+        <li>学习天天进步，前程似锦喵！</li>
+        <li>游戏把把获胜，心情舒畅喵！</li>
+        <li>身体坚定倍棒，活力四射喵！</li>
+        <li>在校园跑的折磨下存活下来喵！</li>
+      </ul>
+    </div>
+
+    <div class="content-card">
+      <h2>呆猫の新年寄语</h2>
+      <div class="wish-text">
+        <p>亲爱的老大们：</p>
+        <p>愿你们在新的一年里：</p>
+        <p>写代码时思路清晰，bug远离喵</p>
+        <p>改需求时心平气和，效率高分喵</p>
+        <p>上线时一次通过，好评如潮喵</p>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <h2>新年趣味小贴士</h2>
+      <p>呆猫提醒您：</p>
+      <ul class="tips-text">
+        <li>熬夜码代码要适度，身体最重要喵！</li>
+        <li>遇到问题多思考，解决方案总会有的喵</li>
+        <li>游戏娱乐不可多，限度要把握喵</li>
+        <li>记得定期备份代码，以防万一喵</li>
+      </ul>
+    </div>
+
+    <div class="content-card">
+      <h2>呆猫の日常</h2>
+      <p>每天都要：</p>
+      <ul class="tips-text">
+        <li>按时吃饭，营养均衡喵</li>
+        <li>适度游戏，快乐打猎喵</li>
+        <li>劳逸结合，适当学习喵</li>
+        <li>保持微笑，心情愉快喵</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 在 body 标签结束前添加 -->
+  <div class="bottom-buttons">
+    <div class="game-button-container">
+      <a href="game.html" class="game-link">
+        <div class="game-button-content">
+          <span class="game-button-text">
+            <span class="main-text">呆猫の新春小游戏</span>
+            <span class="sub-text">点击进入游戏喵~</span>
+          </span>
+        </div>
+      </a>
+    </div>
+
+    <div class="github-container">
+      <a href="https://github.com/Singularity-Ye/daimao_Aibo/" target="_blank" class="github-link">
+        <div class="github-content">
+          <i class="github-icon">
+            <svg height="32" viewBox="0 0 16 16" width="32">
+              <path fill="#03e9f4"
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+              </path>
+            </svg>
+          </i>
+          <div class="github-text">
+            <span class="main-text">查看源代码</span>
+            <span class="sub-text">欢迎访问呆猫の GitHub 仓库喵！</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 先引入共享文件 -->
+  <script src="js/common.js"></script>
+  <script src="js/particle.js"></script>
+  <script src="js/rotating.js"></script>
+  <script src="js/firework.js"></script>
+  <script src="js/index.js"></script>
+
+  <script>
+    // 修改跳过动画函数
+    function skipAnimation() {
+      const fireworkSection = document.getElementById('fireworkSection');
+      const mainContent = document.getElementById('mainContent');
+      const sideButtons = document.querySelector('.side-buttons-container');
+      const audioPlayer = document.getElementById('audioPlayer');
+      const playPauseButton = document.getElementById('playPauseButton');
+
+      if (fireworkSection && mainContent) {
+        fireworkSection.classList.add('hidden');
+
+        if (audioPlayer) {
+          audioPlayer.pause();
+          audioPlayer.currentTime = 0;
+          playPauseButton.classList.remove('playing');
+          const currentRotation = getComputedRotation(playPauseButton);
+          playPauseButton.style.setProperty('--rotation', `${currentRotation}deg`);
+        }
+
+        setTimeout(() => {
+          fireworkSection.style.display = 'none';
+          mainContent.style.display = 'block';
+          mainContent.classList.add('visible');
+
+          if (sideButtons) {
+            sideButtons.style.display = 'block';
+            setTimeout(() => {
+              sideButtons.style.opacity = '1';
+            }, 50);
+          }
+
+          const canvas = document.getElementById('particleCanvas');
+          if (canvas) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (typeof initParticles === 'function') {
+              initParticles();
+            }
+          }
+
+          // 初始化旋转图片
+          if (typeof initRotation === 'function') {
+            initRotation();
+          }
+
+          // 触发重排以确保滚动正常工作
+          window.dispatchEvent(new Event('resize'));
+        }, 1000);
+      }
+    }
+
+    // 页面加载完成后设置音频控制
+    window.addEventListener('load', function () {
+      // 初始化所有播放器按钮的旋转角度
+      document.querySelectorAll('.player-image').forEach(button => {
+        button.style.setProperty('--rotation', '0deg');
+      });
+
+      // 设置音频控制
+      const fireworkAudioPlayer = document.getElementById('audioPlayer');
+      const fireworkPlayPauseButton = document.getElementById('playPauseButton');
+
+      if (fireworkAudioPlayer && fireworkPlayPauseButton) {
+        setupAudioControl(fireworkAudioPlayer, fireworkPlayPauseButton);
+      }
+
+      const mainAudioPlayers = document.querySelectorAll('.music-player-item audio');
+      const mainPlayPauseButtons = document.querySelectorAll('.music-player-item .player-image');
+
+      mainPlayPauseButtons.forEach((button, index) => {
+        if (mainAudioPlayers[index]) {
+          setupAudioControl(mainAudioPlayers[index], button);
+        }
+      });
+    });
+
+    // 修改音频控制设置函数
+    function setupAudioControl(audio, button) {
+      if (!audio || !button) {
+        console.warn('音频或按钮元素不存在');
+        return;
+      }
+
+      // 添加音频加载错误处理
+      audio.addEventListener('error', (e) => {
+        console.error('音频加载失败:', e);
+        button.classList.remove('playing');
+      });
+
+      // 初始化旋转角度
+      button.style.setProperty('--rotation', '0deg');
+
+      button.addEventListener('click', function () {
+        // 暂停所有其他音频
+        document.querySelectorAll('audio').forEach(otherAudio => {
+          if (otherAudio !== audio && !otherAudio.paused) {
+            otherAudio.pause();
+            const otherButton = otherAudio.closest('.music-player-item')?.querySelector('.player-image') ||
+              document.getElementById('playPauseButton');
+            if (otherButton) {
+              otherButton.classList.remove('playing');
+              // 保存当前旋转角度
+              const currentRotation = getComputedRotation(otherButton);
+              otherButton.style.setProperty('--rotation', `${currentRotation}deg`);
+            }
+          }
+        });
+
+        if (audio.paused) {
+          audio.play().then(() => {
+            // 获取当前的旋转角度作为起始点
+            const currentRotation = getComputedRotation(button);
+            button.style.setProperty('--rotation', `${currentRotation}deg`);
+            button.classList.add('playing');
+          }).catch(error => {
+            console.error('播放失败:', error);
+          });
+        } else {
+          audio.pause();
+          button.classList.remove('playing');
+          // 计算并保存当前的旋转角度
+          const currentRotation = getComputedRotation(button);
+          button.style.setProperty('--rotation', `${currentRotation}deg`);
+        }
+      });
+
+      audio.addEventListener('ended', function () {
+        button.classList.remove('playing');
+        // 计算并保存当前的旋转角度
+        const currentRotation = getComputedRotation(button);
+        button.style.setProperty('--rotation', `${currentRotation}deg`);
+      });
+    }
+
+    // 获取当前旋转角度的函数
+    function getComputedRotation(element) {
+      const style = window.getComputedStyle(element);
+      const transform = style.transform;
+
+      if (transform === 'none') {
+        return 0;
+      }
+
+      const values = transform.split('(')[1].split(')')[0].split(',');
+      const a = values[0];
+      const b = values[1];
+      let angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+
+      if (angle < 0) {
+        angle += 360;
+      }
+
+      return angle;
+    }
+
+    // 确保DOM加载完成后再初始化
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('DOM loaded, initializing audio players...'); // DOM加载完成的日志
+      setupAudioPlayers();
+    });
+
+    // 添加错误处理
+    window.addEventListener('error', function (e) {
+      console.log('Audio error:', e.error);
+    }, true);
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const daimao2 = document.querySelector('.daimao2-animate');
+      const daimao4 = document.querySelector('.daimao4-animate');
+      let interactionTimeout;
+
+      function handleMouseEnter(target, other) {
+        target.classList.remove('daimao-interact');
+        target.classList.add('daimao-hover');
+
+        // 当一个图片被悬停时，另一个图片会有反应
+        other.style.transform = `translateX(${target === daimao2 ? '-20px' : '20px'})`;
+      }
+
+      function handleMouseLeave(target, other) {
+        target.classList.remove('daimao-hover');
+        other.style.transform = '';
+
+        // 添加一个短暂的开心动画
+        target.classList.add('daimao-interact');
+        setTimeout(() => {
+          target.classList.remove('daimao-interact');
+        }, 500);
+      }
+
+      function handleClick(target, other) {
+        // 清除之前的定时器
+        clearTimeout(interactionTimeout);
+
+        // 两个图片都播放开心动画
+        target.classList.add('daimao-interact');
+        other.classList.add('daimao-interact');
+
+        // 500ms后恢复原状
+        interactionTimeout = setTimeout(() => {
+          target.classList.remove('daimao-interact');
+          other.classList.remove('daimao-interact');
+        }, 500);
+      }
+
+      // 为两个图片添加事件监听
+      daimao2.addEventListener('mouseenter', () => handleMouseEnter(daimao2, daimao4));
+      daimao2.addEventListener('mouseleave', () => handleMouseLeave(daimao2, daimao4));
+      daimao2.addEventListener('click', () => handleClick(daimao2, daimao4));
+
+      daimao4.addEventListener('mouseenter', () => handleMouseEnter(daimao4, daimao2));
+      daimao4.addEventListener('mouseleave', () => handleMouseLeave(daimao4, daimao2));
+      daimao4.addEventListener('click', () => handleClick(daimao4, daimao2));
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('videoModal');
+      const videoPlayer = document.getElementById('videoPlayer');
+      const closeBtn = document.querySelector('.close-btn');
+      const buttons = document.querySelectorAll('.side-btn');
+
+      // 点击按钮播放视频
+      buttons.forEach(button => {
+        button.addEventListener('click', function () {
+          const videoSrc = this.getAttribute('data-video');
+          videoPlayer.src = videoSrc;
+          modal.style.display = 'flex';
+          videoPlayer.play();
+        });
+      });
+
+      // 关闭视频
+      closeBtn.addEventListener('click', function () {
+        videoPlayer.pause();
+        videoPlayer.currentTime = 0;
+        modal.style.display = 'none';
+      });
+
+      // 点击模态框背景关闭视频
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+          videoPlayer.pause();
+          videoPlayer.currentTime = 0;
+          modal.style.display = 'none';
+        }
+      });
+
+      // ESC键关闭视频
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+          videoPlayer.pause();
+          videoPlayer.currentTime = 0;
+          modal.style.display = 'none';
+        }
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const video = document.getElementById('videoPlayer');
+      const audioPlayer = new Audio();
+      const modal = document.getElementById('videoModal');
+      const muteBtn = document.querySelector('.mute-btn');
+      const volumeIcon = document.querySelector('.volume-icon');
+      const volumeSlider = document.querySelector('.volume-slider');
+      const volumeFilled = document.querySelector('.volume-filled');
+      const loopBtn = document.querySelector('.loop-btn');
+      let lastVolume = 1;
+      let isLooping = true; // 默认设置为 true
+
+      // 更新音量显示
+      function updateVolumeDisplay(volume) {
+        volumeFilled.style.width = `${volume * 100}%`;
+        if (volume === 0 || (video.muted && audioPlayer.muted)) {
+          volumeFilled.style.background = 'rgba(255, 215, 0, 0.2)';
+        } else {
+          volumeFilled.style.background = '#FFD700';
+        }
+      }
+
+      // 更新音量图标和提示文字
+      function updateVolumeIconAndTooltip() {
+        const volumePercent = Math.round(video.volume * 100);
+        if ((video.muted && audioPlayer.muted) || volumePercent === 0) {
+          volumeIcon.textContent = '🔇';
+          muteBtn.setAttribute('data-tooltip', '已静音');
+          updateVolumeDisplay(0);
+        } else if (volumePercent <= 33) {
+          volumeIcon.textContent = '🔈';
+          muteBtn.setAttribute('data-tooltip', `音量：${volumePercent}%`);
+          updateVolumeDisplay(video.volume);
+        } else if (volumePercent <= 66) {
+          volumeIcon.textContent = '🔉';
+          muteBtn.setAttribute('data-tooltip', `音量：${volumePercent}%`);
+          updateVolumeDisplay(video.volume);
+        } else {
+          volumeIcon.textContent = '🔊';
+          muteBtn.setAttribute('data-tooltip', `音量：${volumePercent}%`);
+          updateVolumeDisplay(video.volume);
+        }
+      }
+
+      // 音量控制函数
+      function updateVolume(value) {
+        const volume = Math.max(0, Math.min(1, value));
+
+        // 同时更新视频和音频的音量
+        video.volume = volume;
+        audioPlayer.volume = volume;
+
+        // 如果音量大于0，取消静音状态
+        if (volume > 0) {
+          video.muted = false;
+          audioPlayer.muted = false;
+        }
+
+        updateVolumeDisplay(volume);
+        updateVolumeIconAndTooltip();
+      }
+
+      // 静音按钮点击事件
+      muteBtn.addEventListener('click', () => {
+        if (video.muted && audioPlayer.muted) {
+          // 取消静音
+          video.muted = false;
+          audioPlayer.muted = false;
+          const volumeToRestore = lastVolume > 0 ? lastVolume : 1;
+          updateVolume(volumeToRestore);
+        } else {
+          // 静音
+          lastVolume = video.volume;
+          video.muted = true;
+          audioPlayer.muted = true;
+          updateVolumeDisplay(0);
+          updateVolumeIconAndTooltip();
+        }
+      });
+
+      // 音量滑块点击事件
+      volumeSlider.addEventListener('click', (e) => {
+        const rect = volumeSlider.getBoundingClientRect();
+        const volume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        updateVolume(volume);
+      });
+
+      // 音量滑块拖动功能
+      let isVolumeDragging = false;
+
+      volumeSlider.addEventListener('mousedown', (e) => {
+        isVolumeDragging = true;
+        // 防止选中文本
+        e.preventDefault();
+
+        const rect = volumeSlider.getBoundingClientRect();
+        const volume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        updateVolume(volume);
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isVolumeDragging) {
+          const rect = volumeSlider.getBoundingClientRect();
+          const volume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+          updateVolume(volume);
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isVolumeDragging = false;
+      });
+
+      // 监听视频音量变化
+      video.addEventListener('volumechange', () => {
+        if (!video.muted && video.volume > 0) {
+          lastVolume = video.volume;
+        }
+        // 同步音频音量
+        audioPlayer.volume = video.volume;
+        audioPlayer.muted = video.muted;
+        updateVolumeIconAndTooltip();
+      });
+
+      // 修改 setVideoAndPlay 函数
+      function setVideoAndPlay(videoSrc, audioSrc) {
+        video.src = videoSrc;
+        audioPlayer.src = audioSrc;
+        modal.style.display = 'flex';
+
+        // 默认启用循环播放
+        isLooping = true;
+        video.loop = true;
+        audioPlayer.loop = true;
+        loopBtn.style.color = '#03e9f4';
+        loopBtn.setAttribute('data-tooltip', '循环播放：开启');
+
+        // 确保音频和视频都加载完成后再播放
+        Promise.all([
+          new Promise(resolve => {
+            video.onloadeddata = resolve;
+            video.load();
+          }),
+          new Promise(resolve => {
+            audioPlayer.onloadeddata = resolve;
+            audioPlayer.load();
+          })
+        ]).then(() => {
+          // 设置初始音量
+          audioPlayer.volume = video.volume;
+          audioPlayer.muted = video.muted;
+
+          // 移除之前可能存在的事件监听器
+          video.onended = null;
+
+          // 添加视频结束事件监听器
+          video.addEventListener('ended', () => {
+            if (isLooping) {
+              // 只重新播放视频，不影响音频
+              video.currentTime = 0;
+              video.play().catch(console.error);
+            }
+          });
+
+          // 添加音频结束事件监听器
+          audioPlayer.addEventListener('ended', () => {
+            if (isLooping) {
+              // 只重新播放音频
+              audioPlayer.currentTime = 0;
+              audioPlayer.play().catch(console.error);
+            }
+          });
+
+          // 初始播放
+          video.play().then(() => {
+            audioPlayer.play().catch(console.error);
+          }).catch(console.error);
+        });
+      }
+
+      // 初始化音量显示
+      updateVolume(1);
+
+      // 同步播放控制
+      function syncMediaControl() {
+        video.addEventListener('play', () => {
+          // 只在视频首次播放或手动点击播放时同步音频
+          if (audioPlayer.paused) {
+            audioPlayer.play().catch(console.error);
+          }
+        });
+
+        video.addEventListener('pause', () => {
+          audioPlayer.pause();
+        });
+
+        video.addEventListener('seeking', () => {
+          // 不再同步音频时间
+        });
+
+        video.addEventListener('ratechange', () => {
+          audioPlayer.playbackRate = video.playbackRate;
+        });
+      }
+
+      // 循环播放控制
+      loopBtn.addEventListener('click', () => {
+        isLooping = !isLooping;
+        video.loop = isLooping;
+        audioPlayer.loop = isLooping;
+        loopBtn.style.color = isLooping ? '#03e9f4' : '#FFD700';
+        loopBtn.setAttribute('data-tooltip', `循环播放：${isLooping ? '开启' : '关闭'}`);
+      });
+
+      // 关闭视频时的处理
+      function closeVideo() {
+        video.pause();
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+        modal.style.display = 'none';
+      }
+
+      // 关闭按钮事件
+      document.querySelector('.close-btn').addEventListener('click', closeVideo);
+
+      // 点击模态框背景关闭
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeVideo();
+        }
+      });
+
+      // ESC键关闭
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+          closeVideo();
+        }
+      });
+
+      // 为视频按钮添加点击事件
+      document.querySelectorAll('.side-btn').forEach(button => {
+        button.addEventListener('click', function () {
+          const videoSrc = this.getAttribute('data-video');
+          const audioSrc = this.getAttribute('data-audio') || 'audio/daimao.mp3';
+          setVideoAndPlay(videoSrc, audioSrc);
+        });
+      });
+
+      // 初始化同步控制
+      syncMediaControl();
+
+      // ... 其他音量控制代码保持不变 ...
+    });
+  </script>
+</body>
+
+</html>
